@@ -11,17 +11,20 @@
 
 %%
 
-"int"         { return KW_INT; }
+"byte"        { return KW_BYTE; }
+"short"       { return KW_SHORT; }
+"long"        { return KW_LONG; }
 "float"       { return KW_FLOAT; }
-"bool"        { return KW_BOOL; }
-"char"        { return KW_CHAR; }
-"if"          { return KW_IF; }
+"double"      { return KW_DOUBLE; }
+"when"        { return KW_WHEN; }
 "then"        { return KW_THEN; }
 "else"        { return KW_ELSE; }
+"while"       { return KW_WHILE; }
 "for"         { return KW_FOR; }
 "read"        { return KW_READ; }
-"print"       { return KW_PRINT; }
 "return"      { return KW_RETURN; }
+"print"       { return KW_PRINT; }
+
 
 "<="          { return OPERATOR_LE; }
 ">="          { return OPERATOR_GE; }
@@ -29,9 +32,6 @@
 "!="          { return OPERATOR_NE; }
 "&&"          { return OPERATOR_AND; }
 "||"          { return OPERATOR_OR; }
-
-"TRUE"        { return LIT_TRUE; }
-"FALSE"       { return LIT_FALSE; }
 
 .             { return TOKEN_ERROR; }
 
