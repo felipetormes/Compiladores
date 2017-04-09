@@ -41,7 +41,17 @@
 "&&"                            { return OPERATOR_AND; }
 "||"                            { return OPERATOR_OR; }
 
-[-,;:(){}*+/<>=!&$\]\[]			    { return (int)yytext[0]; }
+[,;:()\[\]{}+\-*/<>=!&$#]			    { return (int)yytext[0]; }
+
+[_a-zA-Z][a-zA-Z0-9_]*            { return TK_IDENTIFIER; }
+
+[0-9][0-9]*                       { return LIT_INTEGER; }
+
+[0-9]\.[0-9]+                     { return LIT_REAL; }
+
+\'[^']\'                          { return LIT_CHAR; }
+
+\"[^"]*\"                         { return LIT_STRING; }
 
 .                               { return TOKEN_ERROR; }
 
