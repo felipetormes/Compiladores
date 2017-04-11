@@ -9,8 +9,6 @@ int main(int argc, char** argv){
 
   yyin = file;
 
-  printf("%d\n", isRunning());
-
   while(isRunning())
   {
     token = yylex();
@@ -22,6 +20,8 @@ int main(int argc, char** argv){
   }
 
   printf("Number of Lines: %d\n", getLineNumber());
+
+  printSymbolTable();
 
   return 1;
 }

@@ -69,17 +69,12 @@
 
 int isRunning(void)
 {
-
-  while(!yywrap())
-  {
-    return running;
-  }
-
-  return 0;
+  return running;
 }
 
 int yywrap()
 {
+  running = 0;
   return 1;
 }
 
