@@ -4,3 +4,18 @@ hahaha
 "hehehe"
 'b'
 //brasil
+byte short float long double then when else while for read return print
+
+/*
+Inserindo um comentário
+de mais de uma linha
+*/
+
+while(sun)
+{
+	rain = FALSE;
+}
+
+hue hue br
+
+gremio > inter
