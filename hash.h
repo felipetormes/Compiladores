@@ -1,38 +1,36 @@
 #define TABLE_SIZE 997
 
-typedef struct symbolsTable
+typedef struct hashTable
 {
   char* symbol;
   int type;
-  struct symbolsTable* next;
-} Symbol;
+  struct hashTable* next;
+} hashNode;
 
-typedef Symbol** hashTable_ref;
+typedef hashNode** hashTable_ref;
 
-void printSymbol(char* symbol);
+void printHashSymbol(char* symbol);
 
-void printType(int type);
+void printHashType(int type);
 
-Symbol* nullTable(void);
+hashNode* nullTable(void);
 
-int isEmpty(Symbol list);
+int isEmpty(hashNode node);
 
-Symbol* cons(char* symbol, int type, Symbol* list);
+hashNode* newHashNode(char* symbol, int type, hashNode* node);
 
-Symbol* find(char* symbol, Symbol list);
+hashNode* hashFinder(char* symbol, hashNode node);
 
-void printList(Symbol list);
+void printHashList(hashNode node, int hashTableIndex);
 
-int hashFunction(char* symbol, int tableSize);
+int hashIndex(char* symbol, int tableSize);
 
 hashTable_ref newHashTable(int size);
 
-Symbol* addToTable(char* symbol, int type, hashTable_ref table, int tableSize);
-
-void printTable(hashTable_ref table, int tableSize);
+hashNode* addToTable(char* symbol, int type, hashTable_ref table, int tableSize);
 
 void initMe(void);
 
-Symbol* addSymbol(char* symbol, int type);
+hashNode* hashInsert(char* symbol, int type);
 
-void printSymbolTable(void);
+void printHashTable(void);

@@ -16,12 +16,12 @@ int main(int argc, char** argv){
     if(!isRunning())
       break;
 
-    printf("Token number: %d \n", token);
+    printf("Token number %d at line %d\n", token, getLineNumber());
   }
 
   printf("Number of Lines: %d\n", getLineNumber());
 
-  printSymbolTable();
+  //printHashTable();
 
   return 1;
 }

@@ -3,56 +3,56 @@
 #include <string.h>
 #include "hash.h"
 
-hashTable_ref symbolTable;
+hashTable_ref hashTable;
 
-void printSymbol(char* symbol)
+void printHashSymbol(char* symbol)
 {
 	printf("%s", symbol);
 }
 
-void printType(int type)
+void printHashSymbolType(int type)
 {
 	printf("%d", type);
 }
 
-Symbol* nullTable(void)
+hashNode* nullTable(void)
 {
-	Symbol* list = (Symbol*) malloc( sizeof(Symbol) );
+	hashNode* node = (hashNode*) malloc( sizeof(hashNode) );
 
-	list->symbol = NULL;
-	list->next = NULL;
+	node->symbol = NULL;
+	node->next = NULL;
 
-	return list;
+	return node;
 }
 
-int isEmpty(Symbol list)
+int isEmpty(hashNode node)
 {
-	return list.symbol == NULL;
+	return node.symbol == NULL;
 }
 
-Symbol* cons(char* symbol, int type, Symbol* list)
+hashNode* newHashNode(char* symbol, int type, hashNode* node)
 {
-	if(list == NULL)
+	if(node == NULL)
 	{
 		return NULL;
 	}
 	else
 	{
-		Symbol* newList = (Symbol*) malloc( sizeof(Symbol) );
+		hashNode* newNode = (hashNode*) malloc( sizeof(hashNode) );
 
-		newList->symbol = (char*) malloc( strlen(symbol) );
-		strcpy(newList->symbol, symbol);
-		newList->type = type;
+		newNode->symbol = (char*) malloc( strlen(symbol) );
+		strcpy(newNode->symbol, symbol);
+		newNode->type = type;
 
-		newList->next = list;
+		newNode->next = node;
 
-		return newList;
+		return newNode;
 	}
 }
 
-Symbol* find(char* symbol, Symbol list)
+hashNode* hashFinder(char* symbol, hashNode node)
 {
-	Symbol* aux = &list;
+	hashNode* aux = &node;
 
 	while( !isEmpty(*aux) )
 	{
@@ -69,27 +69,25 @@ Symbol* find(char* symbol, Symbol list)
 	return NULL;
 }
 
-void printList(Symbol list)
+void printHashList(hashNode node, int hashTableIndex)
 {
-	Symbol* aux = &list;
+	hashNode* aux = &node;
+
+	printf("HashTable[%d]", hashTableIndex);
 
 	while( !isEmpty(*aux) )
 	{
-		printf("(");
-		printSymbol(aux->symbol);
-		printf(" : ");
-		printType(aux->type);
+		printf(" --> (");
+		printHashSymbol(aux->symbol);
+		printf(", ");
+		printHashSymbolType(aux->type);
 		printf(")");
-
-		printf(" :: ");
 
 		aux = aux->next;
 	}
-
-	printf("[]");
 }
 
-int hashFunction(char* symbol, int tableSize)
+int hashIndex(char* symbol, int tableSize)
 {
 	int index = 1;
 	int i;
@@ -104,7 +102,7 @@ int hashFunction(char* symbol, int tableSize)
 
 hashTable_ref newHashTable(int size)
 {
-  hashTable_ref table = (hashTable_ref) calloc(size, sizeof(Symbol*));
+  hashTable_ref table = (hashTable_ref) calloc(size, sizeof(hashNode*));
 	int i;
 
 	for(i = 0; i < size; i++)
@@ -115,11 +113,16 @@ hashTable_ref newHashTable(int size)
 	return table;
 }
 
-Symbol* addToTable(char* symbol, int type, hashTable_ref table, int tableSize)
+void initMe(void)
 {
-	int index = hashFunction(symbol, tableSize);
+	hashTable = newHashTable(TABLE_SIZE);
+}
 
-	Symbol* pointer = find(symbol, *(table[index]));
+hashNode* hashInsert(char* symbol, int type)
+{
+	int index = hashIndex(symbol, TABLE_SIZE);
+
+	hashNode* pointer = hashFinder(symbol, *(hashTable[index]));
 
 	if(pointer != NULL)
 	{
@@ -127,39 +130,24 @@ Symbol* addToTable(char* symbol, int type, hashTable_ref table, int tableSize)
 	}
 	else
 	{
-		table[index] = cons(symbol, type, table[index]);
+		hashTable[index] = newHashNode(symbol, type, hashTable[index]);
 
-		return table[index];
+		return hashTable[index];
 	}
 }
 
-void printTable(hashTable_ref table, int tableSize)
+void printHashTable(void)
 {
 	int i;
 
 	printf("{\n");
 
-	for(i = 0; i < tableSize; i++)
+	for(i = 0; i < TABLE_SIZE; i++)
 	{
 		printf("\t");
-		printList( *(table[i]) );
+		printHashList( *(hashTable[i]), i );
 		printf("\n");
 	}
 
 	printf("}");
-}
-
-void initMe(void)
-{
-	symbolTable = newHashTable(TABLE_SIZE);
-}
-
-Symbol* addSymbol(char* symbol, int type)
-{
-	return addToTable(symbol, type, symbolTable, TABLE_SIZE);
-}
-
-void printSymbolTable(void)
-{
-	printTable(symbolTable, TABLE_SIZE);
 }

@@ -46,15 +46,15 @@
 
 [,;:()\[\]{}+\-*/<>=!&$#]			  { return (int)yytext[0]; }
 
-[_a-zA-Z][a-zA-Z0-9_]*          { addSymbol(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
+[_a-zA-Z][a-zA-Z0-9_]*          { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
 
-[0-9][0-9]*                     { addSymbol(yytext, LIT_INTEGER); return LIT_INTEGER; }
+[0-9][0-9]*                     { hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 
-[0-9]\.[0-9]+                   { addSymbol(yytext, LIT_REAL); return LIT_REAL; }
+[0-9]\.[0-9]+                   { hashInsert(yytext, LIT_REAL); return LIT_REAL; }
 
-\'[^']\'                        { addSymbol(yytext, LIT_CHAR); return LIT_CHAR; }
+\'[^']\'                        { hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
 
-\"[^"]*\"                       { addSymbol(yytext, LIT_STRING); return LIT_STRING; }
+\"[^"]*\"                       { hashInsert(yytext, LIT_STRING); return LIT_STRING; }
 
 .                               { return TOKEN_ERROR; }
 
