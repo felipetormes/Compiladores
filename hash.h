@@ -1,3 +1,5 @@
+//Cássio de Abreu Ramos, Felipe Barbosa Tormes
+
 #define TABLE_SIZE 997
 
 typedef struct hashTable
