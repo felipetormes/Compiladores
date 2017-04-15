@@ -22,7 +22,7 @@
 "/*"                            { BEGIN(COMMENT); }
 
 "//"[^"\n"]*                    {  }
-" "|" "                         {  }
+" "|"\t"                        {  }
 "\n"                            { line_number++; }
 
 "byte"                          { return KW_BYTE; }
@@ -52,7 +52,7 @@
 
 [0-9][0-9]*                     { hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 
-[0-9]\.[0-9]+                   { hashInsert(yytext, LIT_REAL); return LIT_REAL; }
+[0-9]+\.[0-9]+                   { hashInsert(yytext, LIT_REAL); return LIT_REAL; }
 
 \'[^']\'                        { hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
 
