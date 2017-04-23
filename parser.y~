@@ -20,6 +20,7 @@
 %token KW_READ
 %token KW_RETURN
 %token KW_PRINT
+%token KW_TO
 
 %token OPERATOR_LE
 %token OPERATOR_GE
@@ -38,5 +39,26 @@
 
 %%
 
+program : cmdlist
+	;
+
+cmdlist : cmd ';' cmdlist | cmd
+	;
+
+cmd : LIT_INTEGER | TK_IDENTIFIER '=' expr
+	;
+
+expr : expr '+' expr | '(' expr ')' | LIT_INTEGER | TK_IDENTIFIER
+	;
+
+paramlist : param resto
+	| param
+	;
+
+resto : ',' param resto
+	|
+	;
 
 %%
+
+//int yyerror (char *what)

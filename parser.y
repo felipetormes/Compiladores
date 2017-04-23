@@ -39,5 +39,34 @@
 
 %%
 
+program : cmdlist
+	;
+
+cmdlist : cmd ';' cmdlist | cmd
+	;
+
+cmd : LIT_INTEGER | TK_IDENTIFIER '=' expr
+	;
+
+expr : expr '+' expr | '(' expr ')' | LIT_INTEGER | TK_IDENTIFIER
+	;
+
+paramlist : param resto
+	| param
+	;
+
+resto : ',' param resto
+	|
+	;
+
+expr : expr '+' expr
+	| expr '<' expr
+	| TK_IDENTIFIER
+	| LIT_INTEGER
+	| TK_ID '(' paramlist ')'
+	;
+
 
 %%
+
+//int yyerror (char *what)
