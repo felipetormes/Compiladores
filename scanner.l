@@ -3,14 +3,12 @@
   //Cássio de Abreu Ramos, Felipe Barbosa Tormes
 
   #include <stdio.h>
-  #include "tokens.h"
   #include "hash.h"
+  #include "y.tab.h"
 
   int running = 1;
   int token;
   int line_number = 1;
-
-  #include "main.c"
 
 %}
 

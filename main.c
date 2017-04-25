@@ -7,6 +7,8 @@ int main(int argc, char** argv){
 
   initMe();
 
+  yyparse();
+
   if(argc < 2)
   {
     printf("\nPlease, write the file name after the executable's name!\n\n");
@@ -21,21 +23,7 @@ int main(int argc, char** argv){
     exit(1);
   }
 
-  yyin = file;
+  fprintf(stderr,"The input code is syntactically correct!\n");
 
-  while(isRunning())
-  {
-    token = yylex();
-
-    if(!isRunning())
-      break;
-
-    printf("Token number %d at line %d\n", token, getLineNumber());
-  }
-
-  printf("Number of Lines: %d\n", getLineNumber());
-
-  //printHashTable();
-
-  return 1;
+	exit(0);
 }

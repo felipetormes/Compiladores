@@ -7,6 +7,8 @@
 	#include "hash.h"
 %}
 
+%start program
+
 %token KW_BYTE
 %token KW_SHORT
 %token KW_LONG
@@ -167,7 +169,7 @@ return:
 	KW_RETURN expression
 	;
 
-expr:
+expression:
 	TK_IDENTIFIER													|
 	TK_IDENTIFIER '(' parameter_list ')'	|
 	literal																|
@@ -192,4 +194,10 @@ op:
 
 %%
 
-//int yyerror (char *what)
+yyerror(s)
+char *s;
+{
+  fprintf(stderr, "%s in line %d\n",s,getLineNumber());
+
+  exit(3);
+}
