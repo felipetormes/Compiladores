@@ -171,7 +171,7 @@ expr:
 	TK_IDENTIFIER													|
 	TK_IDENTIFIER '(' parameter_list ')'	|
 	literal																|
-
+	expression op expression	|
 	;
 
 op:
@@ -188,6 +188,7 @@ op:
 	OPERATOR_NE		|
 	OPERATOR_AND	|
 	OPERATOR_OR		|
+	;
 
 %%
 
