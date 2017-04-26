@@ -42,11 +42,12 @@
 %%
 
 program:
-	init
+	init 	|
+
 	;
 
 init:
-	global_id_declaration	|
+	global_id_declaration |
 	function
 	;
 
@@ -63,13 +64,13 @@ type:
 	;
 
 global_declaration:
-	literal																		|
-	'[' LIT_INTEGER ']' initial_values_vector
+	literal		';'	init															|
+	'[' LIT_INTEGER ']' initial_values_vector init
 	;
 
 initial_values_vector:
 	literal initial_values_vector	|
-
+	';'
 	;
 
 literal:
