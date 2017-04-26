@@ -1,4 +1,10 @@
-etapa1
+etapa2
 hash.o
 lex.yy.c
 lex.yy.o
+lex.yy.h
+main.o
+y.output
+y.tab.c
+y.tab.o
+y.tab.h
