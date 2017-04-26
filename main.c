@@ -5,23 +5,17 @@
 
 int main(int argc, char** argv){
 
+if(argc < 2) // insuficient arguments
+    exit(0);
+
+  if(!open_input(argv[1])) // couldn't open input file
+    exit(1);
+
   initMe();
 
   yyparse();
 
-  if(argc < 2)
-  {
-    printf("\nPlease, write the file name after the executable's name!\n\n");
-    exit(0);
-  }
-
-  FILE* file = fopen(argv[1], "r");
-
-  if(!file)
-  {
-    printf("\nThe file %s cant't be opened or you typed the wrong name!\n\n", argv[1]);
-    exit(1);
-  }
+  close_input();
 
   fprintf(stderr,"The input code is syntactically correct!\n");
 

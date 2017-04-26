@@ -73,6 +73,30 @@ int isRunning(void)
   return running;
 }
 
+int open_input(char* file_path)
+{
+  FILE* file = fopen(file_path,"r");
+  int could_open = (file != NULL);
+
+  if(!could_open)
+  {
+    return 0;
+  }
+  else
+  {
+    yyin = file;
+
+    return 1;
+  }
+}
+
+int close_input()
+{
+  fclose(yyin);
+
+  return 1;
+}
+
 int yywrap()
 {
   running = 0;
