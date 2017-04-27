@@ -39,6 +39,11 @@
 
 %token TOKEN_ERROR
 
+%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
+%left '+' '-'
+%left '*' '/'
+%left OPERATOR_AND OPERATOR_OR
+
 %%
 
 program:
@@ -64,8 +69,8 @@ type:
 	;
 
 global_declaration:
-	literal		';'	init															|
-	'[' LIT_INTEGER ']' initial_values_vector init
+	literal		';'	program															|
+	'[' LIT_INTEGER ']' initial_values_vector program
 	;
 
 initial_values_vector:
@@ -80,22 +85,22 @@ literal:
 	;
 
 function:
-	function_scope block
+	function_scope command ';' program
 	;
 
 function_scope:
-	type TK_IDENTIFIER '(' parameter_list ')'
+	type TK_IDENTIFIER '(' parameter_list 	|
+	type TK_IDENTIFIER '(' ')'
 	;
 
 parameter_list:
 	type TK_IDENTIFIER parameter_list_comma	|
 	parameter parameter_list_comma			|
-
 	;
 
 parameter_list_comma:
 	',' parameter_list	|
-
+	')'
 	;
 
 parameter:
@@ -118,7 +123,9 @@ command:
 	flow_control					|
 	read									|
 	print									|
-	return
+	return 	|
+	block 	|
+
 	;
 
 attribution_variable:
@@ -136,20 +143,14 @@ flow_control:
 	;
 
 conditionals:
-	KW_WHEN '(' expression ')' KW_THEN command_or_block conditionals		|
-	KW_ELSE command_or_block																						|
+	KW_WHEN '(' expression ')' KW_THEN command conditionals		|
+	KW_ELSE command																						|
 
 	;
 
 loops:
-	KW_WHILE '(' expression ')' command_or_block								|
-	KW_FOR '(' expression KW_TO expression ')' command_or_block	|
-	;
-
-command_or_block:
-	command	|
-	block		|
-
+	KW_WHILE '(' expression ')' command								|
+	KW_FOR '(' attribution_variable KW_TO LIT_INTEGER ')' command
 	;
 
 read:
@@ -172,9 +173,10 @@ return:
 
 expression:
 	TK_IDENTIFIER													|
-	TK_IDENTIFIER '(' parameter_list ')'	|
+	TK_IDENTIFIER '(' parameter_list	|
 	literal																|
 	expression op expression	|
+	TK_IDENTIFIER '[' expression ']' 
 	;
 
 op:
