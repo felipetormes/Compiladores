@@ -2,7 +2,7 @@
 
 a: short 0;
 i: long 0;
-v: long[10] 0 0 0 0 0 0 0 0 0 0; 
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
 mat: long[10];
 f: float 10.55;
 c: byte 'x';
@@ -24,7 +24,7 @@ long main()
     i = i + 1;
     };
   print "Incrementado algumas vezes fica " a "\n";
-  when (a==5) then 
+  when (a==5) then
     print "Parou no meio\n";
   when (a==11) then
     ;
