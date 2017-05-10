@@ -40,9 +40,10 @@
 %token TOKEN_ERROR
 
 %left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
+%left OPERATOR_AND OPERATOR_OR
 %left '+' '-'
 %left '*' '/'
-%left OPERATOR_AND OPERATOR_OR
+
 
 %%
 
@@ -181,6 +182,7 @@ expression:
 	|	TK_IDENTIFIER '(' argument_list	')'
 	|	literal
 	|	TK_IDENTIFIER '[' expression ']'
+	|	'(' expression ')'
 	|	expression '+' expression
 	|	expression '-' expression
 	|	expression '*' expression
