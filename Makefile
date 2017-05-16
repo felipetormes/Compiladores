@@ -1,9 +1,11 @@
-
-etapa2: y.tab.o lex.yy.o hash.o main.o
-	gcc -o etapa2 y.tab.o lex.yy.o hash.o main.o
+etapa3: y.tab.o lex.yy.o hash.o astree.o main.o
+	gcc -o etapa3 y.tab.o lex.yy.o hash.o astree.o main.o
 
 main.o: main.c
 	gcc -c main.c
+
+astree.o:
+	gcc -c astree.c
 
 hash.o: hash.c
 	gcc -c hash.c
@@ -24,4 +26,4 @@ lex.yy.c: scanner.l
 	flex --header-file=lex.yy.h scanner.l
 
 clean:
-	rm *.o lex.yy.c y.tab.c lex.yy.h y.tab.h etapa2 y.output
+	rm *.o lex.yy.c y.tab.c lex.yy.h y.tab.h y.output etapa3
