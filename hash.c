@@ -7,58 +7,39 @@
 
 hashTable_ref hashTable;
 
-void printHashSymbol(char* symbol)
+int equal(symbolType symbol1, symbolType symbol2)
 {
-	printf("%s", symbol);
-}
-
-void printHashSymbolType(int type)
-{
-	printf("%d", type);
+	return (symbol1.type == symbol2.type) && (strcmp(symbol1.text, symbol2.text) == 0);
 }
 
 hashNode* nullTable(void)
 {
-	hashNode* node = (hashNode*) malloc( sizeof(hashNode) );
-
-	node->symbol = NULL;
-	node->next = NULL;
-
-	return node;
+	return NULL;
 }
 
-int isEmpty(hashNode node)
+int isEmpty(hashNode* node)
 {
-	return node.symbol == NULL;
+	return node == NULL;
 }
 
-hashNode* newHashNode(char* symbol, int type, hashNode* node)
+hashNode* newHashNode(symbolType symbol, hashNode* node)
 {
-	if(node == NULL)
-	{
-		return NULL;
-	}
-	else
-	{
 		hashNode* newNode = (hashNode*) malloc( sizeof(hashNode) );
 
-		newNode->symbol = (char*) malloc( strlen(symbol) );
-		strcpy(newNode->symbol, symbol);
-		newNode->type = type;
+		newNode->symbol = symbol;
 
 		newNode->next = node;
 
 		return newNode;
-	}
 }
 
-hashNode* hashFinder(char* symbol, hashNode node)
+hashNode* hashFinder(symbolType symbol, hashNode* node)
 {
-	hashNode* aux = &node;
+	hashNode* aux = node;
 
-	while( !isEmpty(*aux) )
+	while( !isEmpty(aux) )
 	{
-		if(strcmp(aux->symbol, symbol) == 0)
+		if(equal(aux->symbol, symbol))
 		{
 			return aux;
 		}
@@ -69,24 +50,6 @@ hashNode* hashFinder(char* symbol, hashNode node)
 	}
 
 	return NULL;
-}
-
-void printHashList(hashNode node, int hashTableIndex)
-{
-	hashNode* aux = &node;
-
-	printf("HashTable[%d]", hashTableIndex);
-
-	while( !isEmpty(*aux) )
-	{
-		printf(" --> (");
-		printHashSymbol(aux->symbol);
-		printf(", ");
-		printHashSymbolType(aux->type);
-		printf(")");
-
-		aux = aux->next;
-	}
 }
 
 int hashIndex(char* symbol, int tableSize)
@@ -120,8 +83,44 @@ void initMe(void)
 	hashTable = newHashTable(TABLE_SIZE);
 }
 
-hashNode* hashInsert(char* symbol, int type)
+char* removeQuotes(char* s)
 {
+	int newLength = strlen(s) - 2;
+	char* s2 = (char*) calloc(newLength + 1, sizeof(char));
+	strncpy(s2, s + 1, newLength);
+
+	return s2;
+}
+
+hashNode* hashInsert(char* text, int type)
+{
+	symbolType symbol;
+	symbol.text = (char*) calloc(strlen(text) + 1, sizeof(char));
+	strcpy(symbol.text, text);
+	symbol.type = type;
+
+	switch(type)
+	{
+		case SYMBOL_LIT_INTEGER:
+		{
+			symbol.value.intLit = atoi(text);
+			break;
+		}
+		case SYMBOL_LIT_REAL:
+			symbol.value.realLit = atof(text);
+			break;
+		case SYMBOL_LIT_CHAR:
+			symbol.value.charLit = removeQuotes(text)[0];
+			break;
+		case SYMBOL_LIT_STRING:
+			symbol.value.stringLit = removeQuotes(text);
+			break;
+		case SYMBOL_IDENTIFIER:
+			symbol.value.identifier = (char*) calloc(strlen(text) + 1, sizeof(char));
+			strcpy(symbol.value.identifier, text);
+			break;
+	}
+
 	int index = hashIndex(symbol, TABLE_SIZE);
 
 	hashNode* pointer = hashFinder(symbol, *(hashTable[index]));
@@ -136,20 +135,4 @@ hashNode* hashInsert(char* symbol, int type)
 
 		return hashTable[index];
 	}
-}
-
-void printHashTable(void)
-{
-	int i;
-
-	printf("{\n");
-
-	for(i = 0; i < TABLE_SIZE; i++)
-	{
-		printf("\t");
-		printHashList( *(hashTable[i]), i );
-		printf("\n");
-	}
-
-	printf("}");
 }
