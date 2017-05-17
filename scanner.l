@@ -4,6 +4,7 @@
 
   #include <stdio.h>
   #include "hash.h"
+  #include "astree.h" 
   #include "y.tab.h"
 
   int running = 1;
@@ -36,7 +37,7 @@
 "read"                          { return KW_READ; }
 "return"                        { return KW_RETURN; }
 "print"                         { return KW_PRINT; }
-"to"                         	{ return KW_TO; }
+"to"                         	  { return KW_TO; }
 
 "<="                            { return OPERATOR_LE; }
 ">="                            { return OPERATOR_GE; }
@@ -47,15 +48,15 @@
 
 [,;:()\[\]{}+\-*/<>=!&$#]			  { return (int)yytext[0]; }
 
-[_a-zA-Z][a-zA-Z0-9_]*          { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
+[_a-zA-Z][a-zA-Z0-9_]*          { yylval.symbol = hashInsert(yytext, SYMBOL_IDENTIFIER); return TK_IDENTIFIER; }
 
-[0-9][0-9]*                     { hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
+[0-9][0-9]*                     { yylval.symbol = hashInsert(yytext, SYMBOL_LIT_INTEGER); return LIT_INTEGER; }
 
-[0-9]+\.[0-9]+                   { hashInsert(yytext, LIT_REAL); return LIT_REAL; }
+[0-9]+\.[0-9]+                   { yylval.symbol = hashInsert(yytext, SYMBOL_LIT_REAL); return LIT_REAL; }
 
-\'[^']\'                        { hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
+\'[^']\'                        { yylval.symbol = hashInsert(yytext, SYMBOL_LIT_CHAR); return LIT_CHAR; }
 
-\"[^"]*\"                       { hashInsert(yytext, LIT_STRING); return LIT_STRING; }
+\"[^"]*\"                       { yylval.symbol = hashInsert(yytext, SYMBOL_LIT_STRING); return LIT_STRING; }
 
 .                               { return TOKEN_ERROR; }
 
