@@ -69,6 +69,7 @@
 %type <ast> loops
 %type <ast> read
 %type <ast> print
+%type <ast> print_list
 %type <ast> to_print
 %type <ast> return
 %type <ast> expression
@@ -128,7 +129,7 @@ literal:
 	;
 
 literal_list:
-		literal_list literal { $$ = CreateAstree2(LITERALLIST, NULL, $1, $2); } 
+		literal_list literal { $$ = CreateAstree2(LITERALLIST, NULL, $1, $2); }
 	|	{ $$ = CreateAstree0(LITERALLIST, NULL); }
 		;
 
@@ -151,13 +152,11 @@ parameter_list_comma:
 	;
 
 argument_list:
-		TK_IDENTIFIER	argument_list_comma
-	|	TK_IDENTIFIER '[' expression ']' argument_list_comma
-	|	literal argument_list_comma
+		expression argument_list_comma	{ $$ = CreateAstree2(ARGUMENTLIST, NULL, $1,$2); }
 	;
 
 argument_list_comma:
-		',' argument_list
+		',' expression argument_list_comma	{ $$ = CreateAstree1(ARGUMENTLIST, NULL, $2); }
 	|
 	;
 
@@ -201,7 +200,7 @@ conditionals:
 
 loops:
 		KW_WHILE '(' expression ')' command 	{ $$ = CreateAstree2(WHILE, NULL, $3, $5); }
-	|	KW_FOR '(' attribution KW_TO LIT_INTEGER ')' command 	{ $$ = CreateAstree3(WHENTHENELSE, NULL, $3, CreateAstree0(LITERAL, $5), $7); }
+	|	KW_FOR '(' attribution KW_TO LIT_INTEGER ')' command 	{ $$ = CreateAstree3(FOR, NULL, $3, CreateAstree0(LITERAL, $5), $7); }
 	;
 
 read:
@@ -209,24 +208,29 @@ read:
 	;
 
 print:
-		KW_PRINT to_print	{ $$ = CreateAstree1(PRINT, NULL, $2); }
+		KW_PRINT print_list	{ $$ = CreateAstree1(PRINT, NULL, $2); }
 	;
 
+print_list:
+		print_list to_print	{ $$ = CreateAstree2(PRINTLIST, NULL, $1, $2); }
+	|	to_print	{ $$ = CreateAstree1(PRINTLIST, NULL, $1); }
+		;
+
 to_print:
-		LIT_STRING to_print	{ $$ = CreateAstree0(LITERAL, $1); }
-	|	expression to_print	{ $$ = $1; }
+		LIT_STRING 	{ $$ = CreateAstree0(LITERAL, $1); }
+	|	expression 	{ $$ = $1; }
 	|
 	;
 
 return:
-		KW_RETURN expression
+		KW_RETURN expression	{ $$ = CreateAstree1(RETURN, NULL, $2); }
 	;
 
 expression:
 		identifier
 	|	identifier '(' argument_list ')'	{ $$ = CreateAstree2(FUNCTIONCALL, NULL, $1, $3); }
 	|	literal
-	|	identifier '[' expression ']'	{ $$ = CreateAstree2(ARRAYACCESS, NULL, $1, $3); }
+	|	identifier '[' expression ']'	{ $$ = CreateAstree2(ARRAYEXPRESION, NULL, $1, $3); }
 	|	'(' expression ')'	{ $$ = $2; }
 	|	expression '+' expression	{ $$ = CreateAstree2(ADDITION, NULL, $1, $3); }
 	|	expression '-' expression	{ $$ = CreateAstree2(SUBTRACTION, NULL, $1, $3); }
