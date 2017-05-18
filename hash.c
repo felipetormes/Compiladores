@@ -121,9 +121,9 @@ hashNode* hashInsert(char* text, int type)
 			break;
 	}
 
-	int index = hashIndex(symbol, TABLE_SIZE);
+	int index = hashIndex(symbol.text, TABLE_SIZE);
 
-	hashNode* pointer = hashFinder(symbol, *(hashTable[index]));
+	hashNode* pointer = hashFinder(symbol, hashTable[index]);
 
 	if(pointer != NULL)
 	{
@@ -131,7 +131,7 @@ hashNode* hashInsert(char* text, int type)
 	}
 	else
 	{
-		hashTable[index] = newHashNode(symbol, type, hashTable[index]);
+		hashTable[index] = newHashNode(symbol, hashTable[index]);
 
 		return hashTable[index];
 	}

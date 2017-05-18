@@ -1,5 +1,8 @@
 //Cássio de Abreu Ramos, Felipe Barbosa Tormes
 
+#ifndef HASH_H
+#define HASH_H
+
 #define TABLE_SIZE 997
 
 #define SYMBOL_LIT_INTEGER 1
@@ -40,7 +43,7 @@ int isEmpty(hashNode* node);
 
 hashNode* newHashNode(symbolType symbol, hashNode* node);
 
-hashNode* hashFinder(char* symbol, hashNode node);
+hashNode* hashFinder(symbolType symbol, hashNode* node);
 
 int hashIndex(char* symbol, int tableSize);
 
@@ -53,3 +56,5 @@ void initMe(void);
 char* removeQuotes(char* s);
 
 hashNode* hashInsert(char* symbol, int type);
+
+#endif
