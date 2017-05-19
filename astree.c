@@ -293,7 +293,7 @@ char* toOutput(astree* ast)
 			{
 				char* child0_source = toOutput(ast->child[0]);
 				char* buffer = (char*)calloc(strlen("return") + 1 + strlen(child0_source) + 1,sizeof(char));
-				sprintf(buffer,"return %s;",child0_source);
+				sprintf(buffer,"return %s",child0_source);
 				return buffer;
 				break;
 			}
@@ -451,7 +451,7 @@ char* toOutput(astree* ast)
 				char* child1_source = toOutput(ast->child[1]);
 				char* child2_source = toOutput(ast->child[2]);
 				char* buffer = (char*)calloc(strlen(child0_source) + 1 + strlen(child1_source) + 1 + strlen(child2_source) + 1 + 1,sizeof(char));
-				sprintf(buffer,"%s %s(%s)",child0_source,child1_source,child2_source);
+				sprintf(buffer,"\n%s %s(%s)",child0_source,child1_source,child2_source);
 				return buffer;
 				break;
 			}
@@ -541,7 +541,7 @@ char* toOutput(astree* ast)
 				if(strcmp(child1_source,"") != 0)
 					sprintf(buffer,"%s\n%s\n%s",child0_source,child1_source,child2_source);
 				else
-					sprintf(buffer,"%s;\n%s",child0_source,child2_source);
+					sprintf(buffer,"%s%s",child0_source,child2_source);
 
 				return buffer;
 				break;
@@ -561,7 +561,7 @@ char* toOutput(astree* ast)
 					if(ast->child[1]->node_type == DECLARATION || ast->child[1]->node_type == ARRAYDECLARATION)
 						sprintf(buffer,"%s%s\n",child1_source,child0_source);
 					else
-						sprintf(buffer,"%s%s\n",child1_source,child0_source);
+						sprintf(buffer,"%s;\n%s\n",child1_source,child0_source);
 
 					return buffer;
 				}
