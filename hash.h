@@ -11,6 +11,15 @@
 #define SYMBOL_LIT_STRING 4
 #define SYMBOL_IDENTIFIER 5
 
+#include "astree.h"
+
+typedef enum natureENUM
+{
+	SCALAR,
+	VECTOR,
+	FUNCTION
+}natureType;
+
 union value_union
 {
 	int intLit;
@@ -25,6 +34,12 @@ typedef struct symbolStruct
 	union value_union value;
 	char* text;
 	int type;
+	dataType data_type;
+	natureType nature;
+	dataType returnType;
+	int marked;
+	astree* declaration;
+	struct symbolStruct* scope;
 }symbolType;
 
 typedef struct hashTable
