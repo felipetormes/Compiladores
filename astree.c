@@ -26,6 +26,11 @@ astree* CreateAstree(nodeType node_type, hashNode* node, astree* child_0, astree
 			ast->numChildren++;
 	}
 
+	if(ast->child[0] != NULL)
+		ast->lineNumber = ast->child[0]->lineNumber;
+	else
+		ast->lineNumber = getLineNumber();
+
 	return ast;
 }
 

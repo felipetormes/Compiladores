@@ -6,6 +6,7 @@
 #include "hash.h"
 #include "astree.h"
 #include "y.tab.h"
+#include "semantic.h"
 
 extern astree* root;
 
@@ -37,6 +38,8 @@ if(argc < 2) // insuficient arguments
   initMe();
 
   yyparse();
+
+	first_pass(root);
 
   close_input();
 
