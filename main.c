@@ -10,23 +10,6 @@
 
 extern astree* root;
 
-int WriteToFile(char* path, char* content)
-{
-	FILE* file;
-
-	file = fopen(path,"w");
-
-	if(file == NULL)
-	{
-		fprintf(stderr,"ERROR: Couldn't open %s\n",path);
-		exit(1);
-	}
-
-	fprintf(file,"%s",content);
-
-	return 1;
-}
-
 int main(int argc, char** argv){
 
 if(argc < 2) // insuficient arguments
@@ -42,12 +25,6 @@ if(argc < 2) // insuficient arguments
 	first_pass(root);
 
   close_input();
-
-  char* decompiledAST = toOutput(root);
-
-  WriteToFile(argv[2],decompiledAST);
-
-  fprintf(stderr,"The input code is syntactically correct!\n");
 
 	exit(0);
 }
