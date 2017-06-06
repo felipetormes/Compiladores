@@ -270,3 +270,34 @@ void typeToString(int type, char* str)
     }
   }
 }
+
+int compatible(dataType t0, dataType t1)
+{
+    if (t0 == INTEGER && t1 == INTEGER)
+        return 1;
+    if (t0 == REAL && t1 == REAL)
+        return 1;
+    return 0;
+}
+
+int same_types(astree* parameter, astree* argument)
+{
+    astree* identifier;
+    astree* expr;
+    if (parameter->child[2] == NULL)
+        identifier = parameter->child[1];
+    else
+        identifier = parameter->child[2];
+    if (argument->child[1] == NULL)
+        expr = argument->child[0];
+    else
+        expr = argument->child[1];
+    dataType par = identifier->node->symbol.data_type;
+    dataType arg = typeCheck(expr);
+    return compatible(par,arg);
+}
+
+int typeCheck(astree* ast)
+{
+
+}
