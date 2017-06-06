@@ -141,14 +141,8 @@ void first_pass(astree* ast)
               int expected_literal_count = ast->child[2]->node->symbol.value.intLit;
               int literal_count = 0;
 
-              while(ptr != NULL)
+              while(ptr->child[0] != NULL)
               {
-
-                if(ptr->child[0] == NULL)
-                {
-                  break;
-                }
-
                 astree* literals;
 
                 literals = ptr->child[1];
@@ -177,6 +171,8 @@ void first_pass(astree* ast)
               }
             }
           }
+
+          break;
         }
 
         case FUNCTIONDEFINITION:
@@ -297,7 +293,477 @@ int same_types(astree* parameter, astree* argument)
     return compatible(par,arg);
 }
 
+int checkParameters(astree* parameters, astree* arguments, int* expected, int* given)
+{
+  astree* parameter = parameters;
+	astree* argument = arguments;
+	*expected = 0;
+	*given = 0;
+	int types_are_correct = 1;
+
+  while(1)
+	{
+		if(parameter->child[0] == NULL || argument->child[0] == NULL)
+			break;
+
+		if(!same_types(parameter, argument))
+		{
+			types_are_correct = 0;
+			break;
+		}
+
+		(*expected)++; (*given)++;
+
+		parameter = parameter->child[0]; argument = argument->child[0];
+	}
+
+	if(parameter->child[0] != NULL)
+	{
+		while(parameter->child[0] != NULL)
+		{
+			(*expected)++; parameter = parameter->child[0];
+		}
+	}
+
+	if(argument->child[0] != NULL)
+	{
+		while(argument->child[0] != NULL)
+		{
+			(*given)++; argument = argument->child[0];
+		}
+	}
+
+	return types_are_correct;
+}
+
 int typeCheck(astree* ast)
 {
+  if(ast == NULL)
+	{
+		return NO_TYPE;
+	}
 
+  else
+	{
+		switch(ast->node_type)
+		{
+      case IDENTIFIER:
+			{
+				if(ast->node->symbol.marked == FALSE)
+				{
+					fprintf(stderr,"SEMANTIC ERROR: Variable %s has not been defined yet on line %d\n", ast->node->symbol.text, ast->lineNumber);
+          errorCount++;
+
+					return NO_TYPE;
+				}
+				else if(ast->node->symbol.nature != SCALAR)
+				{
+					fprintf(stderr,"SEMANTIC ERROR: Value %s is not a scalar variable on line %d\n", ast->node->symbol.text, ast->lineNumber);
+          errorCount++;
+
+					return NO_TYPE;
+				}
+				else
+				{
+					return ast->node->symbol.data_type;
+				}
+
+				break;
+			}
+
+      case LITERAL:
+			{
+				return ast->node->symbol.data_type;
+
+				break;
+			}
+
+      case ADDITION:
+      {
+        int t0 = typeCheck(ast->child[0]);
+        int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == INTEGER && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else if(t0 == INTEGER && t1 == INTEGER)
+        {
+          return INTEGER;
+        }
+
+        else if(t0 == REAL && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for aritmetic operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        break;
+      }
+
+      case SUBTRACTION:
+      {
+        int t0 = typeCheck(ast->child[0]);
+        int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == INTEGER && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else if(t0 == INTEGER && t1 == INTEGER)
+        {
+          return INTEGER;
+        }
+
+        else if(t0 == REAL && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for aritmetic operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        break;
+      }
+
+      case MULTIPLICATION:
+      {
+        int t0 = typeCheck(ast->child[0]);
+        int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == INTEGER && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else if(t0 == INTEGER && t1 == INTEGER)
+        {
+          return INTEGER;
+        }
+
+        else if(t0 == REAL && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for aritmetic operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        break;
+      }
+
+      case DIVISION:
+      {
+        int t0 = typeCheck(ast->child[0]);
+        int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == INTEGER && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else if(t0 == INTEGER && t1 == INTEGER)
+        {
+          return INTEGER;
+        }
+
+        else if(t0 == REAL && t1 == REAL)
+        {
+          return REAL;
+        }
+
+        else
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for aritmetic operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        break;
+      }
+
+      case LESSERTHAN:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case GREATERTHAN:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case LESSEREQUAL:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case GREATEREQUAL:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case EQUAL:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case NOTEQUAL:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case AND:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case OR:
+      {
+        int t0 = typeCheck(ast->child[0]);
+				int t1 = typeCheck(ast->child[1]);
+
+        if(t0 == BOOL || t1 == BOOL)
+        {
+          fprintf(stderr, "SEMANTIC ERROR: Incompatible types for relational operation on line %d\n", ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        else
+        {
+          return BOOL;
+        }
+
+        break;
+      }
+
+      case FUNCTIONCALL:
+      {
+        symbolType* function = &(ast->child[0]->node->symbol);
+
+        if(function->nature != FUNCTION)
+				{
+					fprintf(stderr,"SEMANTIC ERROR: Value %s is not a function on line %d\n", function->text, ast->lineNumber);
+          errorCount++;
+					return NO_TYPE;
+				}
+
+        else
+				{
+					int expected;
+          int given;
+
+					int types_are_correct = checkParameters(function->declaration->child[0]->child[2], ast->child[1], &expected, &given);
+
+					if(expected != given)
+					{
+						fprintf(stderr,"SEMANTIC ERROR: Function %s expected %d parameters, but given %d on line %d\n", function->text, expected, given, ast->lineNumber);
+            errorCount++;
+					}
+					else if(!types_are_correct)
+					{
+						fprintf(stderr,"SEMANTIC ERROR: Incorrect types for parameters of function %s on line %d\n", function->text, ast->lineNumber);
+            errorCount++;
+					}
+
+					return function->returnType;
+				}
+
+				break;
+      }
+    }
+  }
+}
+
+int verify(astree* ast)
+{
+  if(ast == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		switch(ast->node_type)
+    {
+			case IDENTIFIER:
+			case LITERAL:
+			case ADDITION:
+			case SUBTRACTION:
+			case MULTIPLICATION:
+			case DIVISION:
+			case LESSERTHAN:
+			case GREATERTHAN:
+			case LESSEREQUAL:
+			case GREATEREQUAL:
+			case EQUAL:
+			case NOTEQUAL:
+			case AND:
+			case OR:
+			case FUNCTIONCALL:
+			{
+				return typeCheck(ast) != NO_TYPE;
+
+				break;
+			}
+
+      case ASSIGNMENT:
+			{
+				dataType varType = typeCheck(ast->child[0]);
+				dataType valType = typeCheck(ast->child[1]);
+
+				if(varType != NO_TYPE && valType != NO_TYPE && !compatible(varType, valType))
+				{
+					char t0str[80];
+					char t1str[80];
+					typeToString(varType,t0str);
+					typeToString(valType,t1str);
+
+					errorCount++; fprintf(stderr,"(SEMANTIC) Incompatible type in assignment: %s = %s on line %d\n", t0str, t1str, ast->lineNumber);
+					return FALSE;
+				}
+
+				return TRUE;
+
+				break;
+			}
+
+      case COMMANDLIST:
+			{
+				if(ast->child[0] == NULL)
+					return TRUE;
+				else if(ast->child[1] == NULL)
+					return verify(ast->child[0]);
+				else
+				{
+					int firstAreCorrect = verify(ast->child[0]);
+					int lastIsCorrect = verify(ast->child[1]);
+
+					return firstAreCorrect && lastIsCorrect;
+				}
+				break;
+			}
+
+      case BLOCK:
+			{
+				return verify(ast->child[0]);
+				break;
+			}
+
+      case FUNCTIONDEFINITION:
+      {
+        return verify(ast->child[2]);
+
+				break;
+      }
+    }
+  }
 }

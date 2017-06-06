@@ -58,6 +58,7 @@ typedef enum dataTypeEnum
 	INTEGER,
 	REAL,
 	FUNCTION_TYPE,
+	BOOL,
 	NO_TYPE
 }dataType;
 

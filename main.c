@@ -24,6 +24,8 @@ if(argc < 2) // insuficient arguments
 
 	first_pass(root);
 
+  verify(root);
+
   close_input();
 
   fprintf(stderr,"The input code is syntactically correct!\n");

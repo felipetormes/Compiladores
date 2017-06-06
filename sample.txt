@@ -2,10 +2,11 @@
 
 a: short 5;
 b: float 2.4;
+c: short 3;
 
-v: long[2] 1 4;
+v: long[9] 1 2 3 4 5 6 7 8 9;
 
-short voidfunc() 
+float voidfunc()
 {
-	
+a = b + (a < b);
 };
