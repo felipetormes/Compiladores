@@ -26,5 +26,7 @@ if(argc < 2) // insuficient arguments
 
   close_input();
 
+  fprintf(stderr,"The input code is syntactically correct!\n");
+
 	exit(0);
 }

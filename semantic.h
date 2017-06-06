@@ -7,3 +7,4 @@
 #define TRUE 1
 
 void first_pass(astree* ast);
+void typeToString(int type, char* str);

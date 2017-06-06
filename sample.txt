@@ -1,4 +1,11 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/1
 
-a: short 0;
-a: short 0;
+a: short 5;
+b: float 2.4;
+
+v: long[2] 1 4;
+
+short voidfunc() 
+{
+	
+};

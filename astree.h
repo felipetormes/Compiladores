@@ -56,10 +56,8 @@ typedef enum nodeTypeEnum
 typedef enum dataTypeEnum
 {
 	INTEGER,
-	BYTE,
-	SHORT,
-	LONG,
-	FLOAT,
+	REAL,
+	FUNCTION_TYPE,
 	NO_TYPE
 }dataType;
 
