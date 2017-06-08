@@ -231,13 +231,14 @@ void first_pass(astree* ast)
           astree* parameters = ast->child[0]->child[2];
           astree* parameter_variable = parameters;
 
-          if(parameter_variable = NULL)
+          if(parameter_variable == NULL)
           break;
 
           while(parameter_variable != NULL)
           {
 
           //fprintf(stderr, "%s\n", parameter_variable->child[2]->node->symbol.text);
+
 
           switch(parameters->child[1]->node_type)
           {
@@ -331,18 +332,17 @@ int same_types(astree* parameter, astree* argument)
 
     astree* identifier;
     astree* expr;
-        identifier = parameter->child[2];
+    identifier = parameter->child[2];
 
-        expr = argument->child[0];
+    expr = argument->child[0];
 
     dataType par = identifier->node->symbol.data_type;
     dataType arg = typeCheck(expr);
 
-    //fprintf(stderr, "%s\n", identifier->node->symbol.text);
-    //fprintf(stderr, "%s\n", expr->node->symbol.text);
-    //fprintf(stderr, "%d\n", par);
-    //fprintf(stderr, "%d\n", arg);
-    return compatible(par,arg);
+    if(par != arg)
+      return 0;
+    else
+      return 1;
 }
 
 int checkParameters(astree* parameters, astree* arguments, int* expected, int* given)
@@ -360,6 +360,11 @@ int checkParameters(astree* parameters, astree* arguments, int* expected, int* g
     //fprintf(stderr, "%s\n", argument->child[0]->node->symbol.text);
 		if(parameter->child[0] == NULL || argument->child[1] == NULL)
     {
+
+      if(!same_types(parameter, argument))
+  		{
+
+  			types_are_correct = 0;}
 			break;
     }
 

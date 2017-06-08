@@ -7,7 +7,7 @@ i: short 4;
 
 v: long[8] 1 5 2 1 5 2 6 8;
 
-float voidfunc(short g)
+float voidfunc(double g)
 {
   a = 1.5;
   v#2 = v[a];
@@ -27,7 +27,7 @@ float voidfunc(short g)
 
 short haha(short s)
 {
-	c = voidfunc(a);
+	c = voidfunc(v);
 	print "ahahaha";
 	read b;
 };
