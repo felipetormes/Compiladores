@@ -147,7 +147,7 @@ parameter_list:
 	;
 
 parameter_list_comma:
-		',' type identifier parameter_list_comma	{ $$ = CreateAstree2(PARAMETERLIST, NULL, $2, $3); }
+		',' type identifier parameter_list_comma	{ $$ = CreateAstree3(PARAMETERLIST, NULL, $4, $2, $3); }
 	|	{ $$ = NULL; }
 	;
 
@@ -156,7 +156,7 @@ argument_list:
 	;
 
 argument_list_comma:
-		',' expression argument_list_comma	{ $$ = CreateAstree1(ARGUMENTLIST, NULL, $2); }
+		',' expression argument_list_comma	{ $$ = CreateAstree2(ARGUMENTLIST, NULL, $2, $3); }
 	|	{ $$ = NULL; }
 	;
 

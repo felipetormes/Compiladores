@@ -223,6 +223,47 @@ void first_pass(astree* ast)
             }
           }
 
+          astree* parameters = ast->child[0]->child[2];
+          astree* parameter_variable = parameters;
+
+          while(parameter_variable != NULL)
+          {
+
+          //fprintf(stderr, "%s\n", parameter_variable->child[2]->node->symbol.text);
+
+          switch(parameters->child[1]->node_type)
+          {
+            case TYPEBYTE:
+              {
+                parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                break;
+              }
+              case TYPESHORT:
+              {
+                parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                break;
+              }
+              case TYPELONG:
+              {
+                parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                break;
+              }
+              case TYPEFLOAT:
+              {
+                parameter_variable->child[2]->node->symbol.data_type = REAL;
+                break;
+              }
+              case TYPEDOUBLE:
+              {
+                parameter_variable->child[2]->node->symbol.data_type = REAL;
+                break;
+              }
+          }
+
+          parameter_variable = parameter_variable->child[0];
+
+        }
+
           break;
         }
 
@@ -269,33 +310,36 @@ void typeToString(int type, char* str)
 
 int compatible(dataType t0, dataType t1)
 {
-    if (t0 == INTEGER && t1 == INTEGER)
+    if ((t0 == INTEGER || t0 == REAL) && (t1 == INTEGER || t1 == REAL))
         return 1;
-    if (t0 == REAL && t1 == REAL)
-        return 1;
-    return 0;
+    else
+    {
+      return 0;
+    }
 }
 
 int same_types(astree* parameter, astree* argument)
 {
+
     astree* identifier;
     astree* expr;
-    if (parameter->child[2] == NULL)
-        identifier = parameter->child[1];
-    else
         identifier = parameter->child[2];
-    if (argument->child[1] == NULL)
+
         expr = argument->child[0];
-    else
-        expr = argument->child[1];
+fprintf(stderr, "aquiiii\n");
     dataType par = identifier->node->symbol.data_type;
     dataType arg = typeCheck(expr);
+
+    //fprintf(stderr, "%s\n", identifier->node->symbol.text);
+    //fprintf(stderr, "%s\n", expr->node->symbol.text);
+    //fprintf(stderr, "%d\n", par);
+    //fprintf(stderr, "%d\n", arg);
     return compatible(par,arg);
 }
 
 int checkParameters(astree* parameters, astree* arguments, int* expected, int* given)
 {
-  astree* parameter = parameters;
+  astree* parameter = parameters->child[2];
 	astree* argument = arguments;
 	*expected = 0;
 	*given = 0;
@@ -303,34 +347,45 @@ int checkParameters(astree* parameters, astree* arguments, int* expected, int* g
 
   while(1)
 	{
-		if(parameter->child[0] == NULL || argument->child[0] == NULL)
+
+    //fprintf(stderr, "%s\n", parameter->child[2]->node->symbol.text);
+    //fprintf(stderr, "%s\n", argument->child[0]->node->symbol.text);
+		if(parameter->child[0] == NULL || argument->child[1] == NULL)
+    {
+      fprintf(stderr, "Entrou aquiii\n");
 			break;
+    }
 
 		if(!same_types(parameter, argument))
 		{
+      fprintf(stderr, "u´eéééé\n");
 			types_are_correct = 0;
 			break;
 		}
 
+    fprintf(stderr, "alouuu\n");
+
 		(*expected)++; (*given)++;
 
-		parameter = parameter->child[0]; argument = argument->child[0];
+		parameter = parameter->child[0]; argument = argument->child[1];
 	}
+
+  (*expected)++; (*given)++;
 
 	if(parameter->child[0] != NULL)
 	{
-		while(parameter->child[0] != NULL)
-		{
-			(*expected)++; parameter = parameter->child[0];
-		}
+    while(parameter->child[0] != NULL)
+    {
+      (*expected)++; parameter = parameter->child[0];
+    }
 	}
 
-	if(argument->child[0] != NULL)
+	if(argument->child[1] != NULL)
 	{
-		while(argument->child[0] != NULL)
-		{
-			(*given)++; argument = argument->child[0];
-		}
+		while(argument->child[1] != NULL)
+    {
+      (*given)++; argument = argument->child[1];
+    }
 	}
 
 	return types_are_correct;
@@ -349,7 +404,7 @@ int typeCheck(astree* ast)
 		{
       case IDENTIFIER:
 			{
-				if(ast->node->symbol.marked == FALSE)
+				if(ast->node->symbol.marked != TRUE)
 				{
 					fprintf(stderr,"SEMANTIC ERROR: Variable %s has not been defined yet on line %d\n", ast->node->symbol.text, ast->lineNumber);
           errorCount++;
@@ -358,6 +413,7 @@ int typeCheck(astree* ast)
 				}
 				else if(ast->node->symbol.nature != SCALAR)
 				{
+
 					fprintf(stderr,"SEMANTIC ERROR: Value %s is not a scalar variable on line %d\n", ast->node->symbol.text, ast->lineNumber);
           errorCount++;
 
@@ -383,7 +439,7 @@ int typeCheck(astree* ast)
         int t0 = typeCheck(ast->child[0]);
         int t1 = typeCheck(ast->child[1]);
 
-        if(t0 == INTEGER && t1 == REAL)
+        if((t0 == INTEGER && t1 == REAL) || (t0 == REAL && t1 == INTEGER))
         {
           return REAL;
         }
@@ -648,6 +704,8 @@ int typeCheck(astree* ast)
 
       case FUNCTIONCALL:
       {
+
+        
         symbolType* function = &(ast->child[0]->node->symbol);
 
         if(function->nature != FUNCTION)
@@ -659,10 +717,13 @@ int typeCheck(astree* ast)
 
         else
 				{
+          fprintf(stderr, "funcioncall\n");
 					int expected;
           int given;
 
-					int types_are_correct = checkParameters(function->declaration->child[0]->child[2], ast->child[1], &expected, &given);
+					int types_are_correct = checkParameters(function->declaration->child[0], ast->child[1], &expected, &given);
+
+          fprintf(stderr, "%d\n", given);
 
 					if(expected != given)
 					{
@@ -692,6 +753,7 @@ int verify(astree* ast)
 	}
 	else
 	{
+
 		switch(ast->node_type)
     {
 			case IDENTIFIER:
@@ -760,9 +822,37 @@ int verify(astree* ast)
 
       case FUNCTIONDEFINITION:
       {
-        return verify(ast->child[2]);
+        return verify(ast->child[1]);
 
 				break;
+      }
+
+      case PROGRAM:
+      {
+        if(ast->child[0] == NULL)
+        {
+          return TRUE;
+        }
+        else
+        {
+          int firstIsCorrect;
+          int lastIsCorrect;
+
+          firstIsCorrect = verify(ast->child[0]);
+
+          if(ast->child[1]->node_type == FUNCTIONDEFINITION)
+          {
+            lastIsCorrect = verify(ast->child[1]);
+          }
+          else
+          {
+            lastIsCorrect = TRUE;
+          }
+
+          return firstIsCorrect && lastIsCorrect;
+        }
+
+        break;
       }
     }
   }
