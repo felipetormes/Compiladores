@@ -5,6 +5,10 @@
 
 #include "semantic.h"
 
+struct symbolStruct globalScope;
+
+struct symbolStruct* currentScope;
+
 int errorCount;
 
 void first_pass(astree* ast)
@@ -32,6 +36,7 @@ void first_pass(astree* ast)
             variable->marked = TRUE;
             variable->declaration = ast;
             variable->nature = SCALAR;
+            variable->scope = &globalScope;
 
             switch(ast->child[1]->node_type)
             {
@@ -93,6 +98,7 @@ void first_pass(astree* ast)
             variable->marked = TRUE;
             variable->declaration = ast;
             variable->nature = VECTOR;
+            variable->scope = &globalScope;
 
             switch(ast->child[1]->node_type)
             {
@@ -190,6 +196,7 @@ void first_pass(astree* ast)
             function->node->symbol.data_type = FUNCTION_TYPE;
             function->node->symbol.declaration = ast;
             function->node->symbol.nature = FUNCTION;
+            function->node->symbol.scope = &globalScope;
 
             astree* returnType = ast->child[0]->child[0];
 
@@ -326,7 +333,7 @@ int same_types(astree* parameter, astree* argument)
         identifier = parameter->child[2];
 
         expr = argument->child[0];
-fprintf(stderr, "aquiiii\n");
+
     dataType par = identifier->node->symbol.data_type;
     dataType arg = typeCheck(expr);
 
@@ -352,18 +359,16 @@ int checkParameters(astree* parameters, astree* arguments, int* expected, int* g
     //fprintf(stderr, "%s\n", argument->child[0]->node->symbol.text);
 		if(parameter->child[0] == NULL || argument->child[1] == NULL)
     {
-      fprintf(stderr, "Entrou aquiii\n");
 			break;
     }
 
 		if(!same_types(parameter, argument))
 		{
-      fprintf(stderr, "u´eéééé\n");
+
 			types_are_correct = 0;
 			break;
 		}
 
-    fprintf(stderr, "alouuu\n");
 
 		(*expected)++; (*given)++;
 
@@ -429,7 +434,7 @@ int typeCheck(astree* ast)
 
       case LITERAL:
 			{
-				return ast->node->symbol.data_type;
+				return ast->node->symbol.type;
 
 				break;
 			}
@@ -717,13 +722,10 @@ int typeCheck(astree* ast)
 
         else
 				{
-          fprintf(stderr, "funcioncall\n");
 					int expected;
           int given;
 
 					int types_are_correct = checkParameters(function->declaration->child[0], ast->child[1], &expected, &given);
-
-          fprintf(stderr, "%d\n", given);
 
 					if(expected != given)
 					{
@@ -740,6 +742,46 @@ int typeCheck(astree* ast)
 				}
 
 				break;
+      }
+
+      case ARRAYACCESS:
+      {
+        symbolType* vector_entry = &(ast->child[0]->node->symbol);
+
+        if(vector_entry->nature != VECTOR)
+        {
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Value %s is not an array on line %d\n", vector_entry->text, ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        int t1 = typeCheck(ast->child[1]);
+
+        if(t1 != INTEGER)
+        {
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array indices must be integer types on line %d\n", ast->lineNumber);
+        }
+        
+        return vector_entry->data_type;
+
+        break;
+      }
+
+      case ARRAYEXPRESION:
+      {
+        symbolType* vector = &(ast->child[0]->node->symbol);
+
+        if(vector->nature != VECTOR)
+        {
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Value %s is not an array on line %d\n", vector->text, ast->lineNumber);
+          return NO_TYPE;
+        }
+
+        int index_type = typeCheck(ast->child[1]);
+
+        if(index_type != INTEGER)
+        {
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array index is not a integer value on line %d\n", ast->lineNumber);
+        }
       }
     }
   }
@@ -777,6 +819,151 @@ int verify(astree* ast)
 				break;
 			}
 
+      case RETURN:
+      {
+        int return_type = typeCheck(ast->child[0]);
+
+        if(return_type != currentScope->returnType)
+        {
+          char t0str[80];
+          char t1str[80];
+
+          typeToString(return_type,t0str);
+          typeToString(currentScope->returnType,t1str);
+
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Incompatible return type %s on function %s on line %d\n", t1str, currentScope->text, ast->lineNumber);
+        }
+
+        currentScope = &globalScope;
+
+        break;
+      }
+
+      case PRINTLIST:
+      {
+        if(ast->child[0] == NULL)
+          return TRUE;
+        else if(ast->child[1] == NULL)
+          return typeCheck(ast->child[0]) != NO_TYPE;
+        else
+        {
+          dataType t = typeCheck(ast->child[1]);
+          int restIsCorrect = verify(ast->child[0]);
+
+          return t != NO_TYPE && restIsCorrect;
+        }
+        break;
+      }
+
+      case PRINT:
+      {
+        return verify(ast->child[0]);
+
+        break;
+      }
+
+      case READ:
+      {
+        dataType t = typeCheck(ast->child[0]);
+
+        if(ast->child[0]->node->symbol.nature != SCALAR)
+        {
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Input must use a scalar variable on line %d\n", ast->lineNumber);
+          return FALSE;
+        }
+
+        return t;
+        break;
+      }
+
+      case WHENTHEN:
+      {
+        dataType t = typeCheck(ast->child[0]);
+        
+        if(t != BOOL)
+        {
+          char tstr[80];
+          typeToString(t, tstr);
+
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
+          return FALSE;
+        }
+        
+        if(verify(ast->child[1]))
+        {
+          return TRUE;
+        }
+        else
+        {
+          return FALSE;
+        }
+
+        break;
+      }
+
+      case WHENTHENELSE:
+      {
+        dataType t = typeCheck(ast->child[0]);
+        
+        if(t != BOOL)
+        {
+          char tstr[80];
+          typeToString(t, tstr);
+
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
+          return FALSE;
+        }
+        
+        if(verify(ast->child[1]) && verify(ast->child[2]))
+        {
+          return TRUE;
+        }
+        else
+        {
+          return FALSE;
+        }
+
+        break;
+      }
+
+      case WHILE:
+      {
+        dataType t = typeCheck(ast->child[0]);
+        
+        if(t != BOOL)
+        {
+          char tstr[80];
+          typeToString(t, tstr);
+
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
+          return FALSE;
+        }
+        
+        if(verify(ast->child[1]))
+        {
+          return TRUE;
+        }
+        else
+        {
+          return FALSE;
+        }
+
+        break;
+      }
+
+      case FOR:
+      {
+
+        if(verify(ast->child[0]) && verify(ast->child[2]))
+        {
+          return TRUE;
+        }
+        else
+        {
+          return FALSE;
+        }
+      }
+
       case ASSIGNMENT:
 			{
 				dataType varType = typeCheck(ast->child[0]);
@@ -789,7 +976,7 @@ int verify(astree* ast)
 					typeToString(varType,t0str);
 					typeToString(valType,t1str);
 
-					errorCount++; fprintf(stderr,"(SEMANTIC) Incompatible type in assignment: %s = %s on line %d\n", t0str, t1str, ast->lineNumber);
+					errorCount++; fprintf(stderr,"SEMANTIC ERROR: Incompatible type in assignment: %s = %s on line %d\n", t0str, t1str, ast->lineNumber);
 					return FALSE;
 				}
 
@@ -822,6 +1009,9 @@ int verify(astree* ast)
 
       case FUNCTIONDEFINITION:
       {
+
+        currentScope = &(ast->child[0]->child[1]->node->symbol);
+
         return verify(ast->child[1]);
 
 				break;
@@ -856,4 +1046,15 @@ int verify(astree* ast)
       }
     }
   }
+}
+
+void initSemanticAnalyzer()
+{
+  globalScope.text = (char*)calloc(80,sizeof(char));
+  sprintf(globalScope.text, "@global");
+  //addToTable(globalScope,symbolTable,TABLE_SIZE);
+
+  currentScope = &globalScope;
+
+  errorCount = 0;
 }

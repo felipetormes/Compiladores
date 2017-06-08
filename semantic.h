@@ -13,3 +13,4 @@ int same_types(astree* parameter, astree* argument);
 int checkParameters(astree* parameters, astree* arguments, int* expected, int* given);
 int typeCheck(astree* ast);
 int verify(astree* ast);
+void initSemanticAnalyzer();

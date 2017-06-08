@@ -50,6 +50,8 @@ typedef struct hashTable
 
 typedef hashNode** hashTable_ref;
 
+hashTable_ref symbolTable;
+
 int equal(symbolType symbol1, symbolType symbol2);
 
 hashNode* nullTable(void);
