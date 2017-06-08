@@ -133,16 +133,14 @@ void first_pass(astree* ast)
             //astree* hues2 = hues->child[0];
             //astree* hues3 = hues2->child[1];
 
-            astree* ptr = ast->child[3]->child[0];
+            astree* ptr = ast->child[3];
 
             //fprintf(stderr, "%s\n", ptr->child[0]->child[1]->node->symbol.text);
 
             if(ptr != NULL)
             {
-              if(ptr->child[1] == NULL)
-              {
-                ptr = ptr->child[0];
-              }
+
+              ptr = ptr->child[0];
 
               int expected_literal_count = ast->child[2]->node->symbol.value.intLit;
               int literal_count = 0;
@@ -232,6 +230,9 @@ void first_pass(astree* ast)
 
           astree* parameters = ast->child[0]->child[2];
           astree* parameter_variable = parameters;
+
+          if(parameter_variable = NULL)
+          break;
 
           while(parameter_variable != NULL)
           {
@@ -710,7 +711,7 @@ int typeCheck(astree* ast)
       case FUNCTIONCALL:
       {
 
-        
+
         symbolType* function = &(ast->child[0]->node->symbol);
 
         if(function->nature != FUNCTION)
@@ -758,9 +759,9 @@ int typeCheck(astree* ast)
 
         if(t1 != INTEGER)
         {
-          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array indices must be integer types on line %d\n", ast->lineNumber);
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array index must be integer types on line %d\n", ast->lineNumber);
         }
-        
+
         return vector_entry->data_type;
 
         break;
@@ -780,8 +781,10 @@ int typeCheck(astree* ast)
 
         if(index_type != INTEGER)
         {
-          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array index is not a integer value on line %d\n", ast->lineNumber);
+          errorCount++; fprintf(stderr,"SEMANTIC ERROR: Array index is not an integer value on line %d\n", ast->lineNumber);
         }
+
+        return vector->data_type;
       }
     }
   }
@@ -879,7 +882,7 @@ int verify(astree* ast)
       case WHENTHEN:
       {
         dataType t = typeCheck(ast->child[0]);
-        
+
         if(t != BOOL)
         {
           char tstr[80];
@@ -888,7 +891,7 @@ int verify(astree* ast)
           errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
           return FALSE;
         }
-        
+
         if(verify(ast->child[1]))
         {
           return TRUE;
@@ -904,7 +907,7 @@ int verify(astree* ast)
       case WHENTHENELSE:
       {
         dataType t = typeCheck(ast->child[0]);
-        
+
         if(t != BOOL)
         {
           char tstr[80];
@@ -913,7 +916,7 @@ int verify(astree* ast)
           errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
           return FALSE;
         }
-        
+
         if(verify(ast->child[1]) && verify(ast->child[2]))
         {
           return TRUE;
@@ -929,7 +932,7 @@ int verify(astree* ast)
       case WHILE:
       {
         dataType t = typeCheck(ast->child[0]);
-        
+
         if(t != BOOL)
         {
           char tstr[80];
@@ -938,7 +941,7 @@ int verify(astree* ast)
           errorCount++; fprintf(stderr,"SEMANTIC ERROR: Expected boolean expression in condition, got %s instead on line %d\n", tstr, ast->lineNumber);
           return FALSE;
         }
-        
+
         if(verify(ast->child[1]))
         {
           return TRUE;
@@ -976,9 +979,14 @@ int verify(astree* ast)
 					typeToString(varType,t0str);
 					typeToString(valType,t1str);
 
-					errorCount++; fprintf(stderr,"SEMANTIC ERROR: Incompatible type in assignment: %s = %s on line %d\n", t0str, t1str, ast->lineNumber);
+					errorCount++; fprintf(stderr,"SEMANTIC ERROR: Incompatible types in assignment on line %d\n", ast->lineNumber);
 					return FALSE;
 				}
+
+        if(valType == REAL)
+        {
+          ast->child[0]->node->symbol.data_type = REAL;
+        }
 
 				return TRUE;
 
