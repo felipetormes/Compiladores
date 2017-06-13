@@ -231,8 +231,12 @@ void first_pass(astree* ast)
           astree* parameters = ast->child[0]->child[2];
           astree* parameter_variable = parameters;
 
-          if(parameter_variable == NULL)
+
+
+          if(parameter_variable->child[1] == NULL)
           break;
+
+          fprintf(stderr, "alooo\n");
 
           while(parameter_variable != NULL)
           {
