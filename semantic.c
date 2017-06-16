@@ -69,7 +69,14 @@ void first_pass(astree* ast)
 
             symbolType* literal = &(ast->child[2]->node->symbol);
 
-            if(literal->type != variable->data_type)
+            int literal_type = literal->type;
+
+            if(literal_type == SYMBOL_LIT_CHAR)
+            {
+              literal_type = SYMBOL_LIT_INTEGER;
+            }
+
+            if(literal_type != variable->data_type)
             {
               char string_type[80];
               typeToString(variable->data_type,string_type);
@@ -153,7 +160,14 @@ void first_pass(astree* ast)
 
                 symbolType* literal_vector = &(literals->node->symbol);
 
-                if(literal_vector->type != variable->data_type)
+                int literal_vector_type = literal_vector->type;
+
+                if(literal_vector_type == SYMBOL_LIT_CHAR)
+                {
+                  literal_vector_type = SYMBOL_LIT_INTEGER;
+                }
+
+                if(literal_vector_type != variable->data_type)
                 {
                   char string_type1[80];
                   char string_type2[80];
@@ -236,39 +250,47 @@ void first_pass(astree* ast)
           if(parameter_variable->child[1] == NULL)
           break;
 
-          fprintf(stderr, "alooo\n");
-
           while(parameter_variable != NULL)
           {
 
           //fprintf(stderr, "%s\n", parameter_variable->child[2]->node->symbol.text);
 
 
-          switch(parameters->child[1]->node_type)
+          switch(parameter_variable->child[1]->node_type)
           {
             case TYPEBYTE:
               {
                 parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                parameter_variable->child[2]->node->symbol.marked = TRUE;
+                parameter_variable->child[2]->node->symbol.nature = SCALAR;
                 break;
               }
               case TYPESHORT:
               {
                 parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                parameter_variable->child[2]->node->symbol.marked = TRUE;
+                parameter_variable->child[2]->node->symbol.nature = SCALAR;
                 break;
               }
               case TYPELONG:
               {
                 parameter_variable->child[2]->node->symbol.data_type = INTEGER;
+                parameter_variable->child[2]->node->symbol.marked = TRUE;
+                parameter_variable->child[2]->node->symbol.nature = SCALAR;
                 break;
               }
               case TYPEFLOAT:
               {
                 parameter_variable->child[2]->node->symbol.data_type = REAL;
+                parameter_variable->child[2]->node->symbol.marked = TRUE;
+                parameter_variable->child[2]->node->symbol.nature = SCALAR;
                 break;
               }
               case TYPEDOUBLE:
               {
                 parameter_variable->child[2]->node->symbol.data_type = REAL;
+                parameter_variable->child[2]->node->symbol.marked = TRUE;
+                parameter_variable->child[2]->node->symbol.nature = SCALAR;
                 break;
               }
           }
@@ -282,10 +304,10 @@ void first_pass(astree* ast)
 
         default:
   			{
-  				first_pass(ast->child[0]);
-  				first_pass(ast->child[1]);
-  				first_pass(ast->child[2]);
   				first_pass(ast->child[3]);
+  				first_pass(ast->child[2]);
+  				first_pass(ast->child[1]);
+  				first_pass(ast->child[0]);
 
   				break;
   			}
@@ -803,7 +825,7 @@ int verify(astree* ast)
 {
   if(ast == NULL)
 	{
-		return FALSE;
+		return;
 	}
 	else
 	{
@@ -1036,28 +1058,10 @@ int verify(astree* ast)
 
       case PROGRAM:
       {
-        if(ast->child[0] == NULL)
-        {
-          return TRUE;
-        }
-        else
-        {
-          int firstIsCorrect;
-          int lastIsCorrect;
-
-          firstIsCorrect = verify(ast->child[0]);
-
-          if(ast->child[1]->node_type == FUNCTIONDEFINITION)
-          {
-            lastIsCorrect = verify(ast->child[1]);
-          }
-          else
-          {
-            lastIsCorrect = TRUE;
-          }
-
-          return firstIsCorrect && lastIsCorrect;
-        }
+        verify(ast->child[3]);
+				verify(ast->child[2]);
+				verify(ast->child[1]);
+				verify(ast->child[0]);
 
         break;
       }
