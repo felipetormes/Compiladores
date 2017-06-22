@@ -11,6 +11,7 @@ enum tac_type_enum
   TAC_MOVE,
   TAC_ARRAYASSIGN,
   TAC_ARRAYACCESS,
+  TAC_ARRAY_EXPRESSION,
   TAC_ADD,
   TAC_SUB,
   TAC_MUL,
@@ -58,7 +59,7 @@ TAC* reverse(TAC* myTac);
 TAC* tacArithmeticOp(enum tac_type_enum type, TAC** children);
 TAC* tacIfZero(TAC* test, TAC* thenBlock, TAC* elseBlock);
 TAC* tacWhile(TAC* test, TAC* whileBlock);
-TAC* tacFor(TAC* atr, TAC* lit, TAC* forBlock);
+TAC* tacFor(TAC* test, TAC* forBlock);
 TAC* tacCallFunction(TAC* funcId, TAC* args);
 TAC* tacparameters(TAC** children);
 TAC* tacArguments(TAC** children);

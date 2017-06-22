@@ -9,7 +9,7 @@
 TAC* tacCreate(enum tac_type_enum type, hashNode* res, hashNode* source1, hashNode* source2)
 {
 
-	fprintf(stderr, "aquiiii\n");
+	//fprintf(stderr, "aquiiii\n");
 	TAC* newTac = malloc(sizeof(TAC));
 
 	newTac->tac_type = type;
@@ -119,10 +119,10 @@ TAC* reverse(TAC* myTac)
 
 TAC* tacArithmeticOp(enum tac_type_enum type, TAC** children)
 {
-	hashNode* temp1 = children[0]->res;
-	hashNode* temp2 = children[1]->res;
+	hashNode* temp1 = children[3]->res;
+	hashNode* temp2 = children[2]->res;
 
-	return tacJoin(tacJoin(children[0], children[1]), tacCreate(type, makeTemp(), temp1, temp2));
+	return tacJoin(tacJoin(children[3], children[2]), tacCreate(type, makeTemp(), temp1, temp2));
 }
 
 TAC* tacIfZero(TAC* test, TAC* thenBlock, TAC* elseBlock)
@@ -190,9 +190,34 @@ TAC* tacWhile(TAC* test, TAC* whileBlock)
 		);
 }
 
-TAC* tacFor(TAC* atr, TAC* lit, TAC* forBlock)
+TAC* tacFor(TAC* test, TAC* forBlock)
 {
+	hashNode* testResult = test->res;
+	hashNode* loopLabel = makeLabel();
+	hashNode* endLabel = makeLabel();
 
+	TAC* new_test = clone(test);
+
+	return
+		tacJoin(
+			tacJoin(
+				tacJoin(
+					tacJoin(
+						test,
+						tacJoin(
+							tacCreate(TAC_LABEL, loopLabel, NULL, NULL),
+							tacCreate(TAC_IFZ, endLabel, testResult, NULL)
+						)
+					),
+					forBlock
+				),
+				tacJoin(
+					new_test,
+					tacCreate(TAC_JUMP, loopLabel, NULL, NULL)
+				)
+			),
+			tacCreate(TAC_LABEL, endLabel, NULL, NULL)
+		);
 }
 
 TAC* tacCallFunction(TAC* funcId, TAC* args)
@@ -202,31 +227,31 @@ TAC* tacCallFunction(TAC* funcId, TAC* args)
 
 TAC* tacparameters(TAC** children)
 {
-	if(children[0] == NULL && children[1] == NULL)
+	if(children[3] == NULL && children[2] == NULL)
 		return NULL;
 
-	if(children[2] == NULL)
+	if(children[1] == NULL)
 	{
-		return tacJoin(children[1], tacCreate(TAC_PARAMETERS, children[1]->res, NULL, NULL));
+		return tacJoin(children[2], tacCreate(TAC_PARAMETERS, children[2]->res, NULL, NULL));
 	}
 	else
 	{
-		return tacJoin(tacCreate(TAC_PARAMETERS, children[2]->res, NULL, NULL), tacJoin(children[0], children[2]));
+		return tacJoin(tacCreate(TAC_PARAMETERS, children[1]->res, NULL, NULL), tacJoin(children[3], children[1]));
 	}
 }
 
 TAC* tacArguments(TAC** children)
 {
-	if(children[0] == NULL)
+	if(children[3] == NULL)
 		return NULL;
 
-	if(children[1] == NULL)
+	if(children[2] == NULL)
 	{
-		return tacJoin(children[0], tacCreate(TAC_ARG, NULL, children[0]->res, NULL));
+		return tacJoin(children[3], tacCreate(TAC_ARG, NULL, children[3]->res, NULL));
 	}
 	else
 	{
-		return tacJoin(children[0], tacJoin(children[1], tacCreate(TAC_ARG, NULL, children[1]->res, NULL)));
+		return tacJoin(children[3], tacJoin(children[2], tacCreate(TAC_ARG, NULL, children[2]->res, NULL)));
 	}
 }
 
@@ -338,7 +363,7 @@ TAC* tacGenerate(astree* ast)
 
 	TAC* result;
 
-	fprintf(stderr, "%d\n", ast->node_type);
+	//fprintf(stderr, "%d\n", ast->node_type);
 
 	switch (ast->node_type)
 	{
@@ -429,25 +454,27 @@ TAC* tacGenerate(astree* ast)
 		case WHENTHEN:
 		case WHENTHENELSE:
 		{
-			result = tacIfZero(childTac[0], childTac[1], childTac[2]);
+			result = tacIfZero(childTac[3], childTac[2], childTac[1]);
 			break;
 		}
 
 		case WHILE:
 		{
-			result = tacWhile(childTac[0], childTac[1]);
+			result = tacWhile(childTac[3], childTac[2]);
 			break;
 		}
 
 		case FOR:
 		{
-			result = tacFor(childTac[0], childTac[1], childTac[2]);
+			TAC* test = tacArithmeticOp(TAC_GREATER, childTac);
+
+			result = tacFor(test, childTac[1]);
 			break;
 		}
 
-		case ARRAYACCESS:
+		case ARRAYEXPRESION:
 		{
-			result = tacCreate(TAC_ARRAYACCESS, childTac[0]->res, childTac[1]->res, NULL);
+			result = tacCreate(TAC_ARRAY_EXPRESSION, childTac[3]->res, childTac[2]->res, NULL);
 			break;
 		}
 
@@ -459,7 +486,7 @@ TAC* tacGenerate(astree* ast)
 
 		case FUNCTIONCALL:
 		{
-			result = tacCallFunction(childTac[0], childTac[1]);
+			result = tacCallFunction(childTac[3], childTac[2]);
 			break;
 		}
 
@@ -477,7 +504,7 @@ TAC* tacGenerate(astree* ast)
 
 		case RETURN:
 		{
-			result = tacReturn(childTac[0]);
+			result = tacReturn(childTac[3]);
 			break;
 		}
 
@@ -495,19 +522,19 @@ TAC* tacGenerate(astree* ast)
 
 		case READ:
 		{
-			result = tacCreate(TAC_READ, NULL, childTac[0]->res, NULL);
+			result = tacCreate(TAC_READ, NULL, childTac[3]->res, NULL);
 			break;
 		}
 
 		case PRINT:
 		{
-			result = tacPrint(childTac[0]);
+			result = tacPrint(childTac[3]);
 			break;
 		}
 
 		case FUNCTIONDEFINITION:
 		{
-			result = tacFunctionDefinition(ast->child[0]->child[1]->node, childTac[0], childTac[1]);
+			result = tacFunctionDefinition(ast->child[0]->child[1]->node, childTac[3], childTac[2]);
 			break;
 		}
 

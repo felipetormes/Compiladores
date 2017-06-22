@@ -18,6 +18,11 @@ long main()
   a = v[2];
   v#2 = 4;
 
+  for(a=3 to 10)
+  {
+    print "hahaha";
+  };
+
 
   print " Digite um numero: \n";
   read i;

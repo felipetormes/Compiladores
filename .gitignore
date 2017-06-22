@@ -1,4 +1,4 @@
-etapa4
+etapa5
 hash.o
 lex.yy.c
 lex.yy.o
@@ -10,3 +10,4 @@ y.tab.o
 y.tab.h
 astree.o
 semantic.o
+tac.o
