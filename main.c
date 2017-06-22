@@ -7,6 +7,7 @@
 #include "astree.h"
 #include "y.tab.h"
 #include "semantic.h"
+#include "tac.h"
 
 extern astree* root;
 
@@ -25,6 +26,8 @@ if(argc < 2) // insuficient arguments
 	first_pass(root);
 
   verify(root);
+
+  reverse(tacGenerate(root));
 
   close_input();
 

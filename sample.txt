@@ -1,11 +1,11 @@
-// UFRGS - Compiladores - Marcelo Johann - 2017/1 (modificado)
+// UFRGS - Compiladores - Marcelo Johann - 2017/1
 
 a: short 0;
 i: long 0;
 v: long[10] 0 0 0 0 0 0 0 0 0 0;
 mat: long[10];
 f: float 10.55;
-asdf: float 50;
+asdf: float 50.3;
 c: byte 'x';
 d: byte 65;
 vchar: byte[3] 'a' 'b' 'c';
@@ -15,11 +15,8 @@ vfloat: float[4] 10.0 0.3 999.99 15.001;
 long main()
   {
   a = 10;
-  a = v[15-12+0];
+  a = v[2];
   v#2 = 4;
-
-  for (i = (2==2) to 10) //ERRO SEMANTICO: essa expr nao pode ser booleana
-    print i " ";
 
 
   print " Digite um numero: \n";

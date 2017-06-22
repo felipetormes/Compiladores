@@ -9,6 +9,8 @@ enum tac_type_enum
 {
   TAC_SYMBOL,
   TAC_MOVE,
+  TAC_ARRAYASSIGN,
+  TAC_ARRAYACCESS,
   TAC_ADD,
   TAC_SUB,
   TAC_MUL,
@@ -28,8 +30,10 @@ enum tac_type_enum
   TAC_JUMP,
   TAC_CALL,
   TAC_ARG,
+  TAC_PARAMETERS,
   TAC_RET,
   TAC_PRINT,
+  TAC_PRINT_LIST,
   TAC_READ
 };
 
@@ -55,6 +59,16 @@ TAC* tacArithmeticOp(enum tac_type_enum type, TAC** children);
 TAC* tacIfZero(TAC* test, TAC* thenBlock, TAC* elseBlock);
 TAC* tacWhile(TAC* test, TAC* whileBlock);
 TAC* tacFor(TAC* atr, TAC* lit, TAC* forBlock);
+TAC* tacCallFunction(TAC* funcId, TAC* args);
+TAC* tacparameters(TAC** children);
+TAC* tacArguments(TAC** children);
+TAC* tacParameters(TAC** children);
+TAC* tacPrint(TAC* elements);
+TAC* tacReturn(TAC* expression);
+TAC* tacAssignment(TAC* variable, TAC* expression);
+TAC* tacDeclaration(TAC* id, TAC* literal);
+TAC* tacArrayDeclaration(TAC* id, astree* literal_list);
+TAC* tacFunctionDefinition(hashNode* node, TAC* scope, TAC* block);
 TAC* tacGenerate(astree* ast);
 
 #endif
