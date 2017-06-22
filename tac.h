@@ -61,7 +61,7 @@ TAC* tacIfZero(TAC* test, TAC* thenBlock, TAC* elseBlock);
 TAC* tacWhile(TAC* test, TAC* whileBlock);
 TAC* tacFor(TAC* test, TAC* forBlock);
 TAC* tacCallFunction(TAC* funcId, TAC* args);
-TAC* tacparameters(TAC** children);
+TAC* tacParameters(TAC** children);
 TAC* tacArguments(TAC** children);
 TAC* tacParameters(TAC** children);
 TAC* tacPrint(TAC* elements);

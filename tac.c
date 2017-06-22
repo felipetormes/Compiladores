@@ -225,7 +225,7 @@ TAC* tacCallFunction(TAC* funcId, TAC* args)
 	return tacJoin(tacJoin(args, funcId), tacCreate(TAC_CALL, makeTemp(), funcId->res, NULL));
 }
 
-TAC* tacparameters(TAC** children)
+TAC* tacParameters(TAC** children)
 {
 	if(children[3] == NULL && children[2] == NULL)
 		return NULL;
@@ -466,7 +466,7 @@ TAC* tacGenerate(astree* ast)
 
 		case FOR:
 		{
-			TAC* test = tacArithmeticOp(TAC_GREATER, childTac);
+			TAC* test = tacArithmeticOp(TAC_GREATER_EQUAL, childTac);
 
 			result = tacFor(test, childTac[1]);
 			break;
@@ -540,7 +540,7 @@ TAC* tacGenerate(astree* ast)
 
 		case PARAMETERLIST:
 		{
-			result = tacparameters(childTac);
+			result = tacParameters(childTac);
 			break;
 		}
 
