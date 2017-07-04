@@ -43,23 +43,23 @@ TAC* tacJoin(TAC* tac1, TAC* tac2)
 	return tac2;
 }
 
-TAC* clone(TAC* original)
+TAC* tacCopy(TAC* original)
 {
-	TAC* tac_clone = tacCreate(original->tac_type, original->res, original->source1, original->source2);
+	TAC* tac_copy = tacCreate(original->tac_type, original->res, original->source1, original->source2);
 
-	TAC* clone_ptr = tac_clone->prev;
+	TAC* copy_ptr = tac_copy->prev;
 	TAC* original_ptr = original->prev;
 
 	while(original_ptr != NULL)
 	{
-		clone_ptr = tacCreate(original_ptr->tac_type, original_ptr->res, original_ptr->source1, original_ptr->source2);
-		clone_ptr->prev = original_ptr->prev;
+		copy_ptr = tacCreate(original_ptr->tac_type, original_ptr->res, original_ptr->source1, original_ptr->source2);
+		copy_ptr->prev = original_ptr->prev;
 
 		original_ptr = original_ptr->prev;
-		clone_ptr = clone_ptr->prev;
+		copy_ptr = copy_ptr->prev;
 	}
 
-	return tac_clone;
+	return tac_copy;
 }
 
 hashNode* makeTemp()
@@ -102,7 +102,7 @@ hashNode* EndLabelFunction(hashNode* function)
 	return hashInsert(labelName, SYMBOL_IDENTIFIER);
 }
 
-TAC* reverse(TAC* myTac)
+TAC* tacReverse(TAC* myTac)
 {
 	if(myTac == NULL)
 		return NULL;
@@ -115,6 +115,76 @@ TAC* reverse(TAC* myTac)
 	}
 
 	return aux;
+}
+
+void printCode(TAC* myTac)
+{
+	TAC* aux;
+
+	for(aux = myTac; aux != NULL; aux = aux->next)
+	{
+		if(aux->tac_type != TAC_SYMBOL)
+		{
+
+
+			fprintf(stderr, " ");
+
+			if(aux->res)
+			{
+				switch(aux->res->symbol.type)
+				{
+					case SYMBOL_LIT_INTEGER: fprintf(stderr, "%d ", aux->res->symbol.value.intLit); break;
+					case SYMBOL_LIT_CHAR: fprintf(stderr, "%c ", aux->res->symbol.value.charLit); break;
+					case SYMBOL_LIT_REAL: fprintf(stderr, "%f ", aux->res->symbol.value.realLit); break;
+					case SYMBOL_LIT_STRING: fprintf(stderr, "%c%s%c ", 34, aux->res->symbol.value.stringLit, 34); break;
+					case SYMBOL_IDENTIFIER: fprintf(stderr, "%s ", aux->res->symbol.value.identifier); break;
+				}
+			}
+			else
+			{
+				fprintf(stderr, "NULL ");
+			}
+
+			if(aux->source1)
+			{
+				switch(aux->source1->symbol.type)
+				{
+					case SYMBOL_LIT_INTEGER: fprintf(stderr, "%d ", aux->source1->symbol.value.intLit); break;
+					case SYMBOL_LIT_CHAR: fprintf(stderr, "%c ", aux->source1->symbol.value.charLit); break;
+					case SYMBOL_LIT_REAL: fprintf(stderr, "%f ", aux->source1->symbol.value.realLit); break;
+					case SYMBOL_LIT_STRING: fprintf(stderr, "%c%s%c ", 34, aux->source1->symbol.value.stringLit, 34); break;
+					case SYMBOL_IDENTIFIER: fprintf(stderr, "%s ", aux->source1->symbol.value.identifier); break;
+				}
+			}
+			else
+			{
+				fprintf(stderr, "NULL ");
+			}
+
+			if(aux->source2)
+			{
+				switch(aux->source2->symbol.type)
+				{
+					case SYMBOL_LIT_INTEGER: fprintf(stderr, "%d ", aux->source2->symbol.value.intLit); break;
+					case SYMBOL_LIT_CHAR: fprintf(stderr, "%c ", aux->source2->symbol.value.charLit); break;
+					case SYMBOL_LIT_REAL: fprintf(stderr, "%f ", aux->source2->symbol.value.realLit); break;
+					case SYMBOL_LIT_STRING: fprintf(stderr, "%c%s%c ", 34, aux->source2->symbol.value.stringLit, 34); break;
+					case SYMBOL_IDENTIFIER: fprintf(stderr, "%s ", aux->source2->symbol.value.identifier); break;
+				}
+			}
+			else
+			{
+				fprintf(stderr, "NULL ");
+			}
+
+			fprintf(stderr, "\n");
+
+			/*printf(" %s %s %s\n",
+				aux->res ? aux->res->symbol.text : "NULL",
+				aux->source1 ? aux->source1->symbol.text : "NULL",
+				aux->source2 ? aux->source2->symbol.text : "NULL");*/
+		}
+	}
 }
 
 TAC* tacArithmeticOp(enum tac_type_enum type, TAC** children)
@@ -166,7 +236,7 @@ TAC* tacWhile(TAC* test, TAC* whileBlock)
 	hashNode* loopLabel = makeLabel();
 	hashNode* endLabel = makeLabel();
 
-	TAC* new_test = clone(test);
+	TAC* new_test = tacCopy(test);
 
 	return
 		tacJoin(
@@ -196,7 +266,7 @@ TAC* tacFor(TAC* test, TAC* forBlock)
 	hashNode* loopLabel = makeLabel();
 	hashNode* endLabel = makeLabel();
 
-	TAC* new_test = clone(test);
+	TAC* new_test = tacCopy(test);
 
 	return
 		tacJoin(
