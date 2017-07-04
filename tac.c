@@ -121,12 +121,42 @@ void printCode(TAC* myTac)
 {
 	TAC* aux;
 
+	const char* tacNames[] = {"TAC_SYMBOL",
+				  "TAC_MOVE",
+				  "TAC_ARRAYASSIGN",
+				  "TAC_ARRAYACCESS",
+				  "TAC_ARRAY_EXPRESSION",
+				  "TAC_ADD",
+				  "TAC_SUB",
+				  "TAC_MUL",
+				  "TAC_DIV",
+				  "TAC_LESS",
+				  "TAC_GREATER",
+				  "TAC_LESS_EQUAL",
+				  "TAC_GREATER_EQUAL",
+				  "TAC_EQUAL",
+				  "TAC_NOT_EQUAL",
+				  "TAC_AND",
+				  "TAC_OR",
+				  "TAC_LABEL",
+				  "TAC_BEGINFUN",
+				  "TAC_ENDFUN",
+				  "TAC_IFZ",
+				  "TAC_JUMP",
+				  "TAC_CALL",
+				  "TAC_ARG",
+				  "TAC_PARAMETERS",
+				  "TAC_RET",
+				  "TAC_PRINT",
+				  "TAC_PRINT_LIST",
+				  "TAC_READ"};
+
 	for(aux = myTac; aux != NULL; aux = aux->next)
 	{
 		if(aux->tac_type != TAC_SYMBOL)
 		{
 
-
+			fprintf(stderr,"%s ", tacNames[aux->tac_type]);	
 			fprintf(stderr, " ");
 
 			if(aux->res)
@@ -179,10 +209,6 @@ void printCode(TAC* myTac)
 
 			fprintf(stderr, "\n");
 
-			/*printf(" %s %s %s\n",
-				aux->res ? aux->res->symbol.text : "NULL",
-				aux->source1 ? aux->source1->symbol.text : "NULL",
-				aux->source2 ? aux->source2->symbol.text : "NULL");*/
 		}
 	}
 }
@@ -325,21 +351,6 @@ TAC* tacArguments(TAC** children)
 	}
 }
 
-TAC* tacPrintList(TAC** children)
-{
-	if(children[0] == NULL)
-		return NULL;
-
-	if(children[1] == NULL)
-	{
-		return tacJoin(children[0], tacJoin(children[1], tacJoin(children[2], tacJoin(children[3], tacCreate(TAC_PRINT_LIST, NULL, children[0]->res, NULL)))));
-	}
-	else
-	{
-		return tacJoin(children[0], tacJoin(children[1], tacJoin(children[2], tacJoin(children[3], tacCreate(TAC_PRINT_LIST, NULL, children[1]->res, NULL)))));
-	}
-}
-
 TAC* tacPrint(TAC* elements)
 {
 	return tacJoin(elements, tacCreate(TAC_PRINT,NULL,NULL,NULL));
@@ -403,10 +414,7 @@ TAC* tacFunctionDefinition(hashNode* node, TAC* scope, TAC* block)
 				tacJoin(
 						tacJoin(
 							tacJoin(
-								tacJoin(
-									tacCreate(TAC_JUMP,end_label,NULL,NULL),
-									tacCreate(TAC_LABEL,start_label,NULL,NULL)
-								),
+								tacCreate(TAC_LABEL,start_label,NULL,NULL),
 								tacCreate(TAC_BEGINFUN, node, NULL, NULL)
 							),
 							scope
@@ -566,12 +574,6 @@ TAC* tacGenerate(astree* ast)
 			break;
 		}
 
-		case PRINTLIST:
-		{
-			result = tacPrintList(childTac);
-			break;
-		}
-
 		case RETURN:
 		{
 			result = tacReturn(childTac[3]);
@@ -586,7 +588,7 @@ TAC* tacGenerate(astree* ast)
 
 		case ARRAYDECLARATION:
 		{
-			result = tacArrayDeclaration(childTac[1], ast->child[3]);
+			result = tacArrayDeclaration(childTac[3], ast->child[3]);
 			break;
 		}
 
