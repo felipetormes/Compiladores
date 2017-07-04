@@ -27,7 +27,7 @@ if(argc < 2) // insuficient arguments
 
   verify(root);
 
-  tacReverse(tacGenerate(root));
+  printCode(tacReverse(tacGenerate(root)));
 
   close_input();
 
