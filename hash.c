@@ -5,7 +5,7 @@
 #include <string.h>
 #include "hash.h"
 
-hashTable_ref hashTable;
+//hashTable_ref hashTable;
 
 int equal(symbolType symbol1, symbolType symbol2)
 {

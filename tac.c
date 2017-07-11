@@ -156,7 +156,7 @@ void printCode(TAC* myTac)
 		if(aux->tac_type != TAC_SYMBOL)
 		{
 
-			fprintf(stderr,"%s ", tacNames[aux->tac_type]);	
+			fprintf(stderr,"%s ", tacNames[aux->tac_type]);
 			fprintf(stderr, " ");
 
 			if(aux->res)
