@@ -55,7 +55,7 @@ char* rvalue(hashNode* node)
 			if(node->symbol.value.realLit == 0)
 				num_digits_real = 1;
 			else
-				num_digits_real = (float)log10(abs((double)node->symbol.value.realLit));
+				num_digits_real = node->symbol.value.realLit;
 
 			string = (char*)calloc(1 + 1 + num_digits_real + 1, sizeof(char));
 			sprintf(string, "$%f", node->symbol.value.realLit);
@@ -76,17 +76,6 @@ char* rvalue(hashNode* node)
 			break;
 		}
 	}
-
-	//if(node->symbol.type == SYMBOL_IDENTIFIER)
-	//{
-	//	string = malloc(strlen(node->symbol.text) + 6 + 1);
-	//	sprintf(string, "%s(%%rip)", node->symbol.text);
-	//}
-	//else
-	//{
-	//	string = malloc(1 + strlen(node->symbol.text) + 1);
-	//	sprintf(string, "$%s", node->symbol.text);
-	//}
 
 	return string;
 }
@@ -354,10 +343,10 @@ void generateAssembly_arrayAssign(hashNode* res, hashNode* source)
 	char* resString = lvalue(res);
 	char* sourceString = rvalue(source);
 
-	fprintf(file,"\t\t# STARTING MOVE\n");
+	fprintf(file,"\t\t# STARTING MOVE TO ARRAY\n");
 	fprintf(file,"\t\t\tmovl %s, %%edx\n", sourceString);
 	fprintf(file,"\t\t\tmovl %%edx, %s\n", resString);
-	fprintf(file,"\t\t# ENDING MOVE\n\n");
+	fprintf(file,"\t\t# ENDING MOVE TO ARRAY\n\n");
 
 	free(resString);
 	free(sourceString);
@@ -528,14 +517,6 @@ void generate_data_section(hashTable_ref symbol_table)
 
 							fprintf(file,"\t.comm	array,%d\n",size*4);
 
-							//fprintf(file,"\t.globl %s\n", aux->symbol.text);
-							//fprintf(file,"\t.data\n");
-							//fprintf(file,"\t.align 4\n");
-							//fprintf(file,"\t.type %s, @object\n", aux->symbol.text);
-							//fprintf(file,"\t.size %s, %d\n", aux->symbol.text, 4 * aux->symbol.size);
-							//fprintf(file,"\t%s:\n", aux->symbol.text);
-							//fprintf(file,"\n");
-
 							break;
 						}
 					}
@@ -637,7 +618,7 @@ void generateAssembly_read(hashNode* res)
 
 void generateAssemblyOf(TAC* tac)
 {
-	fprintf(stderr, "%d\n", tac->tac_type);
+	//fprintf(stderr, "%d\n", tac->tac_type);
 	switch(tac->tac_type)
 	{
 		case TAC_SYMBOL: break;

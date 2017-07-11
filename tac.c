@@ -339,7 +339,9 @@ TAC* tacParameters(TAC** children)
 TAC* tacArguments(TAC** children)
 {
 	if(children[3] == NULL)
+	{
 		return NULL;
+	}
 
 	if(children[2] == NULL)
 	{
@@ -347,7 +349,7 @@ TAC* tacArguments(TAC** children)
 	}
 	else
 	{
-		return tacJoin(children[3], tacJoin(children[2], tacCreate(TAC_ARG, NULL, children[2]->res, NULL)));
+		return tacJoin(children[3], tacJoin(children[2], tacCreate(TAC_ARG, NULL, children[3]->res, NULL)));
 	}
 }
 
@@ -594,7 +596,7 @@ TAC* tacGenerate(astree* ast)
 
 		case READ:
 		{
-			result = tacCreate(TAC_READ, NULL, childTac[3]->res, NULL);
+			result = tacCreate(TAC_READ, childTac[3]->res, NULL, NULL);
 			break;
 		}
 

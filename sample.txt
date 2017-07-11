@@ -28,7 +28,7 @@ long main()
   read i;
   while (i<10)
     {
-    a = incn(a,1);
+    a = incn(a,1,2);
     i = i + 1;
     };
   print "Incrementado algumas vezes fica " a "\n";
@@ -43,7 +43,7 @@ long main()
   {};
   };
 
-long incn (long x, long n)
+long incn (long x, long n, long s)
   return x+n;
 
 short voidfunc() ;
