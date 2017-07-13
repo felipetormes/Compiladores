@@ -102,7 +102,7 @@ item:
 
 global_id_declaration:
 		identifier ':' type global_declaration 	{ $$ = CreateAstree3(DECLARATION, NULL, $1, $3, $4); }
-	|	identifier ':' type '[' LIT_INTEGER ']' initial_values_vector	{ $$ = CreateAstree4(ARRAYDECLARATION, NULL, $1, $3, CreateAstree0(LITERAL, $5), $7); }
+	|	identifier ':' type '[' LIT_INTEGER ']' initial_values_vector	{ $1->node->symbol.size = $5->symbol.value.intLit; $$ = CreateAstree4(ARRAYDECLARATION, NULL, $1, $3, CreateAstree0(LITERAL, $5), $7); }
 	;
 
 type:

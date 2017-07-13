@@ -515,7 +515,7 @@ void generate_data_section(hashTable_ref symbol_table)
 						{
 							int size = aux->symbol.size;
 
-							fprintf(file,"\t.comm	array,%d\n",size*4);
+							fprintf(file,"\t.comm	%s,%d\n",aux->symbol.text, size*4);
 
 							break;
 						}
@@ -544,40 +544,45 @@ void generate_data_section(hashTable_ref symbol_table)
 	fprintf(file,"\n");
 }
 
-void generateAssembly_output_arg(hashNode* source)
+void generateAssembly_print()
+{
+	//fprintf(file, "\t\t\tcall	printf\n");
+}
+
+void generateAssembly_print_list(hashNode* source)
 {
 	switch(source->symbol.type)
 	{
 		case SYMBOL_LIT_STRING:
 		{
-			fprintf(file, "\t\t# STARTING OUTPUT ARG\n");
+			fprintf(file, "\t\t# STARTING PRINT LIST\n");
 			fprintf(file, "\t\t\tmovl	$.LC%d, %%esi\n", source->symbol.strings_count);
 			fprintf(file, "\t\t\tmovl	$.LC0, %%edi\n");
 			fprintf(file, "\t\t\tmovl	$0, %%eax\n");
 			fprintf(file, "\t\t\tcall	printf\n");
-			fprintf(file, "\t\t# ENDING OUTPUT ARG\n\n");
+			fprintf(file, "\t\t# ENDING PRINT LIST\n\n");
 
 			break;
 		}
 		case SYMBOL_LIT_INTEGER:
 		{
-			fprintf(file, "\t\t# STARTING OUTPUT ARG\n");
+			fprintf(file, "\t\t# STARTING PRINT LIST\n");
 			fprintf(file, "\t\t\tmovl	$%d, %%esi\n", source->symbol.value.intLit);
 			fprintf(file, "\t\t\tmovl	$.LC1, %%edi\n");
 			fprintf(file, "\t\t\tmovl	$0, %%eax\n");
 			fprintf(file, "\t\t\tcall	printf\n");
-			fprintf(file, "\t\t# ENDING OUTPUT ARG\n\n");
+			fprintf(file, "\t\t# ENDING PRINT LIST\n\n");
 
 			break;
 		}
 		case SYMBOL_LIT_CHAR:
 		{
-			fprintf(file, "\t\t# STARTING OUTPUT ARG\n");
+			fprintf(file, "\t\t# STARTING PRINT LIST\n");
 			fprintf(file, "\t\t\tmovl	$%d, %%esi\n", source->symbol.value.charLit);
 			fprintf(file, "\t\t\tmovl	$.LC2, %%edi\n");
 			fprintf(file, "\t\t\tmovl	$0, %%eax\n");
 			fprintf(file, "\t\t\tcall	printf\n");
-			fprintf(file, "\t\t# ENDING OUTPUT ARG\n\n");
+			fprintf(file, "\t\t# ENDING PRINT LIST\n\n");
 
 			break;
 		}
@@ -585,25 +590,18 @@ void generateAssembly_output_arg(hashNode* source)
 		{
 			char* s = rvalue(source);
 
-			fprintf(file, "\t\t# STARTING OUTPUT ARG\n");
+			fprintf(file, "\t\t# STARTING PRINT LIST\n");
 			fprintf(file, "\t\t\tmovl	%s, %%esi\n", s);
 			fprintf(file, "\t\t\tmovl	$.LC1, %%edi\n");
 			fprintf(file, "\t\t\tmovl	$0, %%eax\n");
 			fprintf(file, "\t\t\tcall	printf\n");
-			fprintf(file, "\t\t# ENDING OUTPUT ARG\n\n");
+			fprintf(file, "\t\t# ENDING PRINT LIST\n\n");
 
 			free(s);
 
 			break;
 		}
 	}
-}
-
-void generateAssembly_print()
-{
-	fprintf(file, "\t\t\tmovl	$.LC3, %%edi\n");
-	fprintf(file, "\t\t\tmovl	$0, %%eax\n");
-	fprintf(file, "\t\t\tcall	printf\n");
 }
 
 void generateAssembly_read(hashNode* res)
@@ -647,6 +645,7 @@ void generateAssemblyOf(TAC* tac)
 		//case TAC_OUTPUT_ARG: 	generateAssembly_output_arg(tac->source1); break;
 		case TAC_RET: 			generateAssembly_ret(tac->source1); break;
 		case TAC_PRINT: 		generateAssembly_print(); break;
+		case TAC_PRINT_LIST: generateAssembly_print_list(tac->source1); break;
 		case TAC_READ: 			generateAssembly_read(tac->res); break;
 		//case TAC_GET_ARG: 		generateAssembly_getarg(tac->res); argCount++; break;
 		//case TAC_DECL: 			generateAssembly_decl(tac->res, tac->source1); break;//generateAssembly_decl(tac->res, tac->source1); break;

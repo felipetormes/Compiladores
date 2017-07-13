@@ -70,7 +70,12 @@ hashNode* makeTemp()
 	sprintf(tempName, "___temp%d___", count);
 	count++;
 
-	return hashInsert(tempName, SYMBOL_IDENTIFIER);
+	hashNode* temp = hashInsert(tempName, SYMBOL_IDENTIFIER);
+
+	temp->symbol.nature = SCALAR;
+	temp->symbol.value.intLit = 0;
+
+	return temp;
 }
 
 hashNode* makeLabel()
@@ -323,16 +328,18 @@ TAC* tacCallFunction(TAC* funcId, TAC* args)
 
 TAC* tacParameters(TAC** children)
 {
-	if(children[3] == NULL && children[2] == NULL)
-		return NULL;
-
-	if(children[1] == NULL)
+	if(children[2] == NULL && children[1] == NULL)
 	{
-		return tacJoin(children[2], tacCreate(TAC_PARAMETERS, children[2]->res, NULL, NULL));
+		return NULL;
+	}
+
+	if(children[3] == NULL)
+	{
+		return tacJoin(children[1], tacCreate(TAC_PARAMETERS, children[1]->res, NULL, NULL));
 	}
 	else
 	{
-		return tacJoin(tacCreate(TAC_PARAMETERS, children[1]->res, NULL, NULL), tacJoin(children[3], children[1]));
+		return tacJoin(tacCreate(TAC_PARAMETERS, children[1]->res, NULL, NULL), tacJoin(children[2], children[1]));
 	}
 }
 
@@ -361,6 +368,23 @@ TAC* tacPrint(TAC* elements)
 TAC* tacReturn(TAC* expression)
 {
 	return tacJoin(expression, tacCreate(TAC_RET, NULL, expression->res, NULL));
+}
+
+TAC* tacPrintList(TAC** children)
+{
+	if(children[3] == NULL)
+	{
+		return NULL;
+	}
+
+	if(children[2] == NULL)
+	{
+		return tacJoin(children[3], tacCreate(TAC_PRINT_LIST, NULL, children[3]->res, NULL));
+	}
+	else
+	{
+		return tacJoin(children[3], tacJoin(children[2], tacCreate(TAC_PRINT_LIST, NULL, children[2]->res, NULL)));
+	}
 }
 
 TAC* tacAssignment(TAC* variable, TAC* expression)
@@ -546,7 +570,7 @@ TAC* tacGenerate(astree* ast)
 
 		case FOR:
 		{
-			TAC* test = tacArithmeticOp(TAC_GREATER_EQUAL, childTac);
+			TAC* test = tacArithmeticOp(TAC_LESS_EQUAL, childTac);
 
 			result = tacFor(test, childTac[1]);
 			break;
@@ -603,6 +627,12 @@ TAC* tacGenerate(astree* ast)
 		case PRINT:
 		{
 			result = tacPrint(childTac[3]);
+			break;
+		}
+
+		case PRINTLIST:
+		{
+			result = tacPrintList(childTac);
 			break;
 		}
 
