@@ -40,6 +40,8 @@ typedef struct symbolStruct
 	int marked;
 	astree* declaration;
 	struct symbolStruct* scope;
+	int size;
+	int strings_count;
 }symbolType;
 
 typedef struct hashTable
@@ -50,7 +52,7 @@ typedef struct hashTable
 
 typedef hashNode** hashTable_ref;
 
-hashTable_ref symbolTable;
+hashTable_ref hashTable;
 
 int equal(symbolType symbol1, symbolType symbol2);
 

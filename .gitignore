@@ -1,4 +1,4 @@
-etapa5
+etapa6
 hash.o
 lex.yy.c
 lex.yy.o
@@ -11,3 +11,4 @@ y.tab.h
 astree.o
 semantic.o
 tac.o
+assembly.o

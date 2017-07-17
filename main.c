@@ -8,6 +8,7 @@
 #include "y.tab.h"
 #include "semantic.h"
 #include "tac.h"
+#include "assembly.h"
 
 extern astree* root;
 
@@ -27,7 +28,11 @@ if(argc < 2) // insuficient arguments
 
   verify(root);
 
-  tacReverse(tacGenerate(root));
+  TAC* tacs = tacReverse(tacGenerate(root));
+
+  printCode(tacs);
+
+  generateAssembly(tacs, argv[2]);
 
   close_input();
 

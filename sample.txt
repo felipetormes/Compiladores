@@ -2,54 +2,43 @@
 
 a: short 0;
 i: long 0;
-v: long[10] 0 0 0 0 0 0 0 0 0 0;
+//v: long[10] 0 0 0 0 0 0 0 0 0 0;
 mat: long[10];
-f: float 10.55;
-asdf: float 50.3;
+f: float 0;
+asdf: float 0;
 c: byte 'x';
 d: byte 65;
-vchar: byte[3] 'a' 'b' 'c';
-vfloat: float[4] 10.0 0.3 999.99 15.001;
+//vchar: byte[3] 'a' 'b' 'c';
+vfloat: float[4];
 
 
 long main()
   {
-  a = 10;
-  a = v[2];
-  v#2 = 4;
+  a = 0;
 
-  for(a=3 to 10)
+
+  for(i=0 to 9)
   {
-    print "hahaha";
-  };
-
-
-  print " Digite um numero: \n";
-  read i;
-  while (i<10)
-    {
-    a = incn(a,1);
+    print "Teste for"i;
     i = i + 1;
-    };
-  print "Incrementado algumas vezes fica " a "\n";
-  when (a==5) then
-    print "Parou no meio\n";
-  when (a==11) then
-    ;
-  when (a==11) then else
-    ;
-  ;;;
-  {;};
-  {};
   };
 
-long incn (long x, long n)
-  return x+n;
+  while(i>=a)
+  {
+    when(a==i) then
+    {
+      print "igual";
+    }
+    else{
+      print "diferente";
+    };
+    a = a + 1;
+  };
 
-short voidfunc() ;
+  return 0;
+  };
 
-byte otherFunc (byte a1, byte a2, byte a3, byte a4, byte a5)
-    return a1 + a2 + a3 + a4 + a5;
-
-double idFunc (double id)
-    return id;
+long other (long g)
+{
+  return g+1;
+};

@@ -52,10 +52,13 @@ typedef struct tac_struct
 
 TAC* tacCreate(enum tac_type_enum type, hashNode* destination, hashNode* source1, hashNode* source2);
 TAC* tacJoin(TAC* tac1, TAC* tac2);
-TAC* clone(TAC* original);
+TAC* tacCopy(TAC* original);
 hashNode* makeTemp();
 hashNode* makeLabel();
-TAC* reverse(TAC* myTac);
+hashNode* StartLabelFunction(hashNode* function);
+hashNode* EndLabelFunction(hashNode* function);
+TAC* tacReverse(TAC* myTac);
+void printCode(TAC* myTac);
 TAC* tacArithmeticOp(enum tac_type_enum type, TAC** children);
 TAC* tacIfZero(TAC* test, TAC* thenBlock, TAC* elseBlock);
 TAC* tacWhile(TAC* test, TAC* whileBlock);
