@@ -64,7 +64,7 @@ char* rvalue(hashNode* node)
 
 		case SYMBOL_LIT_INTEGER:
 		{
-			int num_digits;
+			int num_digits, i;
 
 			if(node->symbol.value.intLit == 0)
 				num_digits = 1;
@@ -72,7 +72,16 @@ char* rvalue(hashNode* node)
 				num_digits = (int)log10(abs((double)node->symbol.value.intLit));
 
 			string = (char*)calloc(1 + 1 + num_digits + 1, sizeof(char));
-			sprintf(string, "$%d", node->symbol.value.intLit);
+			i = (node->symbol.value.intLit)/10;
+			if(i>=1)
+			{
+				i = node->symbol.value.intLit + (i*6);
+			}
+			else
+			{
+				i = node->symbol.value.intLit;
+			}
+			sprintf(string, "$%d", i);
 			break;
 		}
 	}
@@ -441,6 +450,18 @@ void generateAssembly_arg(hashNode* source)
 	free(sourceString);
 }
 
+void generateAssembly_parameters(hashNode* res)
+{
+	char* resString = lvalue(res);
+
+	fprintf(file,"\t\t# STARTING GET_ARG\n");
+	fprintf(file,"\t\t\tmovl	%d(%%rsp), %%edx\n", (argCount + 2) * 8);
+	fprintf(file,"\t\t\tmovl	%%edx, %s\n", resString);
+	fprintf(file,"\t\t# ENDING GET_ARG\n\n");
+
+	free(resString);
+}
+
 void generateAssembly_getarg(hashNode* res)
 {
 	char* resString = lvalue(res);
@@ -647,7 +668,7 @@ void generateAssemblyOf(TAC* tac)
 		case TAC_PRINT: 		generateAssembly_print(); break;
 		case TAC_PRINT_LIST: generateAssembly_print_list(tac->source1); break;
 		case TAC_READ: 			generateAssembly_read(tac->res); break;
-		//case TAC_GET_ARG: 		generateAssembly_getarg(tac->res); argCount++; break;
+		case TAC_PARAMETERS: 		generateAssembly_parameters(tac->res); argCount++; break;
 		//case TAC_DECL: 			generateAssembly_decl(tac->res, tac->source1); break;//generateAssembly_decl(tac->res, tac->source1); break;
 		//case TAC_ARRAY_DECL: 	generateAssembly_arrayDecl(tac->res, tac->source1); break;
 		//case TAC_ELEM_DECL: 	generateAssembly_elemDecl(tac->source1); break;
