@@ -73,7 +73,7 @@ hashNode* makeTemp()
 	hashNode* temp = hashInsert(tempName, SYMBOL_IDENTIFIER);
 
 	temp->symbol.nature = SCALAR;
-	temp->symbol.value.intLit = 0;
+	//temp->symbol.value.intLit = 0;
 
 	return temp;
 }
@@ -486,6 +486,7 @@ TAC* tacGenerate(astree* ast)
 		case ADDITION:
 		{
 			result = tacArithmeticOp(TAC_ADD, childTac);
+			//fprintf(stderr, "%s\n", result->res->symbol.text);
 			break;
 		}
 
@@ -498,6 +499,7 @@ TAC* tacGenerate(astree* ast)
 		case MULTIPLICATION:
 		{
 			result = tacArithmeticOp(TAC_MUL, childTac);
+			//fprintf(stderr, "%d\n", result->res->symbol.value.intLit);
 			break;
 		}
 
@@ -657,4 +659,33 @@ TAC* tacGenerate(astree* ast)
 
 	}
 
+}
+
+TAC* test(TAC* tacs)
+{
+	int i = 0;
+	TAC* aux;
+	TAC* aux1;
+
+	for(aux = tacs; aux->next != NULL; aux = aux->next)
+	{
+		if(aux->tac_type == TAC_ADD)
+		{
+			fprintf(stderr, "%s\n", aux->res->symbol.value.identifier);
+			i++;
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+
+				if(aux1->tac_type == TAC_ADD)
+				{
+					aux->res->symbol.value.identifier = aux1->res->symbol.value.identifier;
+					aux->res->symbol.text = aux1->res->symbol.text;
+					
+					i++;
+				}
+			}
+		}
+	}
+
+	return aux;
 }

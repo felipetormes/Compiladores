@@ -454,10 +454,10 @@ void generateAssembly_parameters(hashNode* res)
 {
 	char* resString = lvalue(res);
 
-	fprintf(file,"\t\t# STARTING GET_ARG\n");
+	fprintf(file,"\t\t# STARTING GET_PARAMETERS\n");
 	fprintf(file,"\t\t\tmovl	%d(%%rsp), %%edx\n", (argCount + 2) * 8);
 	fprintf(file,"\t\t\tmovl	%%edx, %s\n", resString);
-	fprintf(file,"\t\t# ENDING GET_ARG\n\n");
+	fprintf(file,"\t\t# ENDING GET_PARAMETERS\n\n");
 
 	free(resString);
 }
@@ -490,15 +490,15 @@ void generate_data_section(hashTable_ref symbol_table)
 	hashNode* aux;
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%s %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%s%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%x %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%x%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%c %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%c%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n",strings_count);
