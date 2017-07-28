@@ -661,7 +661,7 @@ TAC* tacGenerate(astree* ast)
 
 }
 
-TAC* test(TAC* tacs, hashTable_ref symbol_table)
+TAC* optmize(TAC* tacs)
 {
 	TAC* aux;
 	TAC* aux1;

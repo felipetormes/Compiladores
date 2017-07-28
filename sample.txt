@@ -2,20 +2,19 @@
 
 a: short 0;
 i: long 0;
-//v: long[10] 0 0 0 0 0 0 0 0 0 0;
 mat: long[10];
-//f: float 0;
-//asdf: float 0;
 c: byte 'x';
 d: byte 65;
-//vchar: byte[3] 'a' 'b' 'c';
 vfloat: float[4];
 
 
 long main()
   {
   a = (3+5)*(3+5)*(3+5)*(3+5)*(3+5)*(3+5)*(3+5);
-  print a;
+  i = (7*9)+(7*9);
+  print a"\n";
+  read a;
+  print a"\n";
 
   return 0;
   };

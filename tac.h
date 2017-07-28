@@ -74,5 +74,6 @@ TAC* tacDeclaration(TAC* id, TAC* literal);
 TAC* tacArrayDeclaration(TAC* id, astree* literal_list);
 TAC* tacFunctionDefinition(hashNode* node, TAC* scope, TAC* block);
 TAC* tacGenerate(astree* ast);
+TAC* optmize(TAC* tacs);
 
 #endif

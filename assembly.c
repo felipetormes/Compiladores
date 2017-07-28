@@ -431,7 +431,7 @@ void generateAssembly_end_fun(hashNode* node)
 void generateAssembly_call(hashNode* node, hashNode* res)
 {
 	fprintf(file,"\t\t# STARTING CALL\n");
-	//fprintf(file,"\t\t\tsubq	$%d, %%rsp\n", argCount * 8);
+	fprintf(file,"\t\t\tsubq	$%d, %%rsp\n", argCount * 8);
 	fprintf(file,"\t\t\tcall	%s\n", node->symbol.text);
 	fprintf(file,"\t\t\tmovl	%%eax, %s\n", res->symbol.text);
 	fprintf(file,"\t\t# ENDING CALL\n\n");
