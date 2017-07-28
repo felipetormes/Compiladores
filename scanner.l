@@ -4,9 +4,12 @@
 
   #include <stdio.h>
   #include "hash.h"
-  #include "astree.h" 
+  #include "astree.h"
   #include "y.tab.h"
-
+  #ifndef YYSTYPE
+  #define YYSTYPE int
+  #endif
+  
   int running = 1;
   int token;
   int line_number = 1;
