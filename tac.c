@@ -661,27 +661,86 @@ TAC* tacGenerate(astree* ast)
 
 }
 
-TAC* test(TAC* tacs)
+TAC* test(TAC* tacs, hashTable_ref symbol_table)
 {
-	int i = 0;
 	TAC* aux;
 	TAC* aux1;
+	TAC* aux2;
 
 	for(aux = tacs; aux->next != NULL; aux = aux->next)
 	{
 		if(aux->tac_type == TAC_ADD)
 		{
-			fprintf(stderr, "%s\n", aux->res->symbol.value.identifier);
-			i++;
 			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
 			{
-
 				if(aux1->tac_type == TAC_ADD)
 				{
-					aux->res->symbol.value.identifier = aux1->res->symbol.value.identifier;
-					aux->res->symbol.text = aux1->res->symbol.text;
-					
-					i++;
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_SUB)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_SUB)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_MUL)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_MUL)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_DIV)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_DIV)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
 				}
 			}
 		}

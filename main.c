@@ -30,7 +30,7 @@ if(argc < 2) // insuficient arguments
 
   TAC* tacs = tacReverse(tacGenerate(root));
 
-  TAC* opt = tacReverse(test(tacs));
+  TAC* opt = tacReverse(test(tacs, hashTable));
 
   printCode(opt);
 

@@ -486,8 +486,9 @@ int value(symbolType symbol)
 
 void generate_data_section(hashTable_ref symbol_table)
 {
-	int i;
+	int i,j=0,k, flag = 0;
 	hashNode* aux;
+	char* index[TABLE_SIZE];
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
 	fprintf(file, "\t\t.string %c%%s%c\n", 34, 34);
@@ -521,14 +522,30 @@ void generate_data_section(hashTable_ref symbol_table)
 					{
 						case SCALAR:
 						{
-							fprintf(file,"\t.globl %s\n", aux->symbol.text);
-							fprintf(file,"\t.data\n");
-							fprintf(file,"\t.align 4\n");
-							fprintf(file,"\t.type %s, @object\n", aux->symbol.text);
-							fprintf(file,"\t.size %s, 4\n", aux->symbol.text);
-							fprintf(file,"\t%s:\n", aux->symbol.text);
-							fprintf(file,"\t\t.long %d\n", aux->symbol.value.intLit);
-							fprintf(file,"\n");
+							flag = 0;
+							index[j] = aux->symbol.text;
+
+							for(k=0;k<j;k++)
+							{
+								if(strcmp(index[k],index[j]) == 0)
+								{
+									flag = 1;
+								}
+							}
+
+							if(!flag)
+							{
+								fprintf(file,"\t.globl %s\n", aux->symbol.text);
+								fprintf(file,"\t.data\n");
+								fprintf(file,"\t.align 4\n");
+								fprintf(file,"\t.type %s, @object\n", aux->symbol.text);
+								fprintf(file,"\t.size %s, 4\n", aux->symbol.text);
+								fprintf(file,"\t%s:\n", aux->symbol.text);
+								fprintf(file,"\t\t.long %d\n", aux->symbol.value.intLit);
+								fprintf(file,"\n");
+							}
+
+							j++;
 
 							break;
 						}
