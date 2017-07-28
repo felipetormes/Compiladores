@@ -88,7 +88,8 @@ begin:
 
 program:
 		item program	{ $$ = CreateAstree2(PROGRAM, NULL, $2, $1); }
-	|	{ $$ = CreateAstree0(PROGRAM, NULL); }
+	| panicmode program {$$ = $2;}
+	| { $$ = CreateAstree0(PROGRAM, NULL); }
 	;
 
 identifier:
@@ -166,7 +167,8 @@ block:
 
 command_list:
 		command ';' command_list	{ $$ = CreateAstree2(COMMANDLIST, NULL, $3, $1); }
-	|	{ $$ = CreateAstree0(COMMANDLIST, NULL); }
+	| panicmode command_list {$$ = $2;}
+	| { $$ = CreateAstree0(COMMANDLIST, NULL); }
 	;
 
 command:
@@ -245,6 +247,10 @@ expression:
 	|	expression OPERATOR_AND expression	{ $$ = CreateAstree2(AND, NULL, $1, $3); }
 	|	expression OPERATOR_OR expression	{ $$ = CreateAstree2(OR, NULL, $1, $3); }
 	;
+
+panicmode:
+						error ';' {yyerrok;}
+						;
 
 %%
 
