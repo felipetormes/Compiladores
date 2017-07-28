@@ -30,9 +30,11 @@ if(argc < 2) // insuficient arguments
 
   TAC* tacs = tacReverse(tacGenerate(root));
 
-  printCode(tacs);
+  TAC* opt = tacReverse(optmize(tacs));
 
-  generateAssembly(tacs, argv[2]);
+  printCode(opt);
+
+  generateAssembly(opt, argv[2]);
 
   close_input();
 

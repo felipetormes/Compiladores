@@ -73,7 +73,7 @@ hashNode* makeTemp()
 	hashNode* temp = hashInsert(tempName, SYMBOL_IDENTIFIER);
 
 	temp->symbol.nature = SCALAR;
-	temp->symbol.value.intLit = 0;
+	//temp->symbol.value.intLit = 0;
 
 	return temp;
 }
@@ -486,6 +486,7 @@ TAC* tacGenerate(astree* ast)
 		case ADDITION:
 		{
 			result = tacArithmeticOp(TAC_ADD, childTac);
+			//fprintf(stderr, "%s\n", result->res->symbol.text);
 			break;
 		}
 
@@ -498,6 +499,7 @@ TAC* tacGenerate(astree* ast)
 		case MULTIPLICATION:
 		{
 			result = tacArithmeticOp(TAC_MUL, childTac);
+			//fprintf(stderr, "%d\n", result->res->symbol.value.intLit);
 			break;
 		}
 
@@ -657,4 +659,92 @@ TAC* tacGenerate(astree* ast)
 
 	}
 
+}
+
+TAC* optmize(TAC* tacs)
+{
+	TAC* aux;
+	TAC* aux1;
+	TAC* aux2;
+
+	for(aux = tacs; aux->next != NULL; aux = aux->next)
+	{
+		if(aux->tac_type == TAC_ADD)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_ADD)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_SUB)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_SUB)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_MUL)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_MUL)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+
+		if(aux->tac_type == TAC_DIV)
+		{
+			for(aux1 = aux->next; aux1->next != NULL; aux1 = aux1->next)
+			{
+				if(aux1->tac_type == TAC_DIV)
+				{
+					if((aux->source1 == aux1->source1) && (aux->source2 == aux1->source2))
+					{
+						aux1->res->symbol.value.identifier = aux->res->symbol.value.identifier;
+						aux1->res->symbol.text = aux->res->symbol.text;
+
+						aux1->tac_type = TAC_SYMBOL;
+						aux1->source1 = NULL;
+						aux1->source2 = NULL;
+					}
+				}
+			}
+		}
+	}
+
+	return aux;
 }

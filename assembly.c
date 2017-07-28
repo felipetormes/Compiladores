@@ -431,7 +431,7 @@ void generateAssembly_end_fun(hashNode* node)
 void generateAssembly_call(hashNode* node, hashNode* res)
 {
 	fprintf(file,"\t\t# STARTING CALL\n");
-	//fprintf(file,"\t\t\tsubq	$%d, %%rsp\n", argCount * 8);
+	fprintf(file,"\t\t\tsubq	$%d, %%rsp\n", argCount * 8);
 	fprintf(file,"\t\t\tcall	%s\n", node->symbol.text);
 	fprintf(file,"\t\t\tmovl	%%eax, %s\n", res->symbol.text);
 	fprintf(file,"\t\t# ENDING CALL\n\n");
@@ -454,10 +454,10 @@ void generateAssembly_parameters(hashNode* res)
 {
 	char* resString = lvalue(res);
 
-	fprintf(file,"\t\t# STARTING GET_ARG\n");
+	fprintf(file,"\t\t# STARTING GET_PARAMETERS\n");
 	fprintf(file,"\t\t\tmovl	%d(%%rsp), %%edx\n", (argCount + 2) * 8);
 	fprintf(file,"\t\t\tmovl	%%edx, %s\n", resString);
-	fprintf(file,"\t\t# ENDING GET_ARG\n\n");
+	fprintf(file,"\t\t# ENDING GET_PARAMETERS\n\n");
 
 	free(resString);
 }
@@ -486,19 +486,20 @@ int value(symbolType symbol)
 
 void generate_data_section(hashTable_ref symbol_table)
 {
-	int i;
+	int i,j=0,k, flag = 0;
 	hashNode* aux;
+	char* index[TABLE_SIZE];
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%s %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%s%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%x %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%x%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n", strings_count);
-	fprintf(file, "\t\t.string %c%%c %c\n", 34, 34);
+	fprintf(file, "\t\t.string %c%%c%c\n", 34, 34);
 	strings_count++;
 
 	fprintf(file,"\t.LC%d:\n",strings_count);
@@ -521,14 +522,30 @@ void generate_data_section(hashTable_ref symbol_table)
 					{
 						case SCALAR:
 						{
-							fprintf(file,"\t.globl %s\n", aux->symbol.text);
-							fprintf(file,"\t.data\n");
-							fprintf(file,"\t.align 4\n");
-							fprintf(file,"\t.type %s, @object\n", aux->symbol.text);
-							fprintf(file,"\t.size %s, 4\n", aux->symbol.text);
-							fprintf(file,"\t%s:\n", aux->symbol.text);
-							fprintf(file,"\t\t.long %d\n", aux->symbol.value.intLit);
-							fprintf(file,"\n");
+							flag = 0;
+							index[j] = aux->symbol.text;
+
+							for(k=0;k<j;k++)
+							{
+								if(strcmp(index[k],index[j]) == 0)
+								{
+									flag = 1;
+								}
+							}
+
+							if(!flag)
+							{
+								fprintf(file,"\t.globl %s\n", aux->symbol.text);
+								fprintf(file,"\t.data\n");
+								fprintf(file,"\t.align 4\n");
+								fprintf(file,"\t.type %s, @object\n", aux->symbol.text);
+								fprintf(file,"\t.size %s, 4\n", aux->symbol.text);
+								fprintf(file,"\t%s:\n", aux->symbol.text);
+								fprintf(file,"\t\t.long %d\n", aux->symbol.value.intLit);
+								fprintf(file,"\n");
+							}
+
+							j++;
 
 							break;
 						}
